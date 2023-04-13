@@ -1,4 +1,4 @@
-package com.bsquare.core.entities
+package com.bsquare.core.entities.responses
 
 import com.google.gson.annotations.SerializedName
 

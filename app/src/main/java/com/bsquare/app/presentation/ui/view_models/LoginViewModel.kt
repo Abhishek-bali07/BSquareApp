@@ -1,5 +1,6 @@
 package com.bsquare.app.presentation.ui.view_models
 
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,8 +8,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bsquare.app.presentation.states.castValueToRequiredTypes
 import com.bsquare.app.utills.helper_impl.SavableMutableState
 import com.bsquare.app.utills.helper_impl.UiData
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 
 import com.bsquare.core.usecases.LoginUseCase
@@ -26,11 +29,11 @@ class LoginViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-
     val companyName = mutableStateOf("")
     val mobile = mutableStateOf("")
     val password = mutableStateOf("")
     var showPassword by mutableStateOf(false)
+    var toastNotify = mutableStateOf("")
 
 
     fun onChangeName(n: String) {
@@ -61,6 +64,37 @@ class LoginViewModel @Inject constructor(
             companyName = companyName.value,
             userPassword = password.value
         ).onEach {
+            when(it.type){
+                EmitType.Loading -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<Boolean>()?.let {
+                            loginLoading.setValue(it)
+                        }
+                    }
+                }
+                EmitType.Navigate -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<Destination.NoArgumentsDestination>()?.let {destination ->
+                            appNavigator.navigateTo(destination(), )
+                        }
+                    }
+                }
+                EmitType.NetworkError -> {
+                        it.value?.apply {
+                            castValueToRequiredTypes<String>()?.let {
+                                toastNotify.value = it
+                            }
+                        }
+                 }
+                EmitType.BackendError -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<String>()?.let {
+                            toastNotify.value = it
+                        }
+                    }
+                }
+                else -> {}
+            }
 
         }.launchIn(viewModelScope)
     }

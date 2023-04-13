@@ -2,7 +2,7 @@ package com.bsquare.core.usecases
 import com.bsquare.core.common.constants.Data
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.Resource
-import com.bsquare.core.common.constants.handleFailedResponse
+import com.bsquare.core.utils.handleFailedResponse
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.common.enums.IntroStatus
 

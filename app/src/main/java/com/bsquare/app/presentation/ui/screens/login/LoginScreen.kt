@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bsquare.app.R
+import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.ui.customise.AppButton
 import com.bsquare.app.presentation.ui.customise.MobileNumberValidator
 import com.bsquare.app.presentation.ui.view_models.LoginViewModel
@@ -28,49 +29,66 @@ import com.bsquare.app.presentation.ui.view_models.LoginViewModel
 fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        TopAppBar(
 
-            backgroundColor = Color.Transparent,
-            elevation = 2.dp,
-            title = { Text("") },
-            navigationIcon = {
-                Image(
+    val scaffoldState = rememberScaffoldState()
 
-                    modifier = Modifier
-                        .size(100.dp)
-                        .padding(horizontal = 8.dp),
-                    painter = painterResource(id = R.drawable.logox), contentDescription = null
-                )
-            },
-            actions = {
-                Button(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
-                ) {
-                    Text(text = "LOGIN")
+    Scaffold(
+        scaffoldState = scaffoldState
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TopAppBar(
+
+                backgroundColor = Color.Transparent,
+                elevation = 2.dp,
+                title = { Text("") },
+                navigationIcon = {
+                    Image(
+
+                        modifier = Modifier
+                            .size(100.dp)
+                            .padding(horizontal = 8.dp),
+                        painter = painterResource(id = R.drawable.logox), contentDescription = null
+                    )
+                },
+                actions = {
+                    Button(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        onClick = { },
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+                    ) {
+                        Text(text = "LOGIN")
+                    }
                 }
-            }
-        )
+            )
 
-        LoginImageSection(R.drawable.gslogo)
+            LoginImageSection(R.drawable.gslogo)
 
-        LoginInputSection(loginViewModel)
+            LoginInputSection(loginViewModel)
 
-        AppButton(
-            enable = loginViewModel.enableBtn.value,
-            loading = loginViewModel.loginLoading.value,
-            action = loginViewModel :: appLogin,
-            name = R.string.login
+            AppButton(
+                enable = loginViewModel.enableBtn.value,
+                loading = loginViewModel.loginLoading.value,
+                action = loginViewModel::appLogin,
+                name = R.string.login
 
-        )
+            )
 
+        }
     }
+
+
+    loginViewModel.toastNotify.ComposeLaunchEffect(
+        intentionalCode = { message ->
+            scaffoldState.snackbarHostState.showSnackbar(message)
+        },
+        clearance = { "" }
+    )
 }
 
 @Composable
@@ -134,7 +152,7 @@ fun PasswordInputTextField(loginViewModel: LoginViewModel) {
                 )
             }
         },
-        visualTransformation = if(loginViewModel.showPassword) VisualTransformation.None else PasswordVisualTransformation()
+        visualTransformation = if (loginViewModel.showPassword) VisualTransformation.None else PasswordVisualTransformation()
     )
 
 }

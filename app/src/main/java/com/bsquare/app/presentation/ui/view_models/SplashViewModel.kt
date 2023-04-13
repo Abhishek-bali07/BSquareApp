@@ -13,10 +13,8 @@ import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.DialogData
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.common.enums.IntroStatus
-import com.bsquare.core.domain.repositories.intro.SplashRepository
 import com.bsquare.core.usecases.SplashUseCases
 import com.bsquare.core.utils.helper.AppNavigator
-import com.bsquare.core.utils.helper.AppStore
 import com.bsquare.core.entities.AppVersion
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

@@ -2,7 +2,7 @@ package com.bsquare.app.data.repositories
 
 import com.bsquare.core.common.constants.Resource
 import com.bsquare.core.domain.repositories.login.LoginRepository
-import com.bsquare.core.entities.LoginVerifyResponse
+import com.bsquare.core.entities.responses.LoginVerifyResponse
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 

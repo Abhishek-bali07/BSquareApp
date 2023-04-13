@@ -1,7 +1,7 @@
 package com.bsquare.core.domain.repositories.login
 
 import com.bsquare.core.common.constants.Resource
-import com.bsquare.core.entities.LoginVerifyResponse
+import com.bsquare.core.entities.responses.LoginVerifyResponse
 
 interface LoginRepository {
 

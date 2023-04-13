@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.bsquare.app.navigation.screen_transitions.AppScreenTransitions
+import com.bsquare.app.presentation.ui.screens.dashboard.DashboardScreen
 import com.bsquare.app.presentation.ui.screens.intro.SplashScreen
 import com.bsquare.app.presentation.ui.screens.login.LoginScreen
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
@@ -23,7 +24,7 @@ fun MainNavGraph(
     navHostController.NavEffects(navigationChannel)
     AppNavHost(
             navController = navHostController,
-            startDestination = Destination.SplashScreen,
+            startDestination = Destination.DashboardScreen,
             modifier = Modifier.padding(paddingValues),
             enterTransition = AppScreenTransitions.ScreenEnterTransition,
             popEnterTransition = AppScreenTransitions.ScreenPopEnterTransition,
@@ -35,6 +36,9 @@ fun MainNavGraph(
         }
         composable(destination =   Destination.LoginScreen ){
             LoginScreen()
+        }
+        composable(destination = Destination.DashboardScreen){
+            DashboardScreen()
         }
     }
 }

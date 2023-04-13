@@ -1,12 +1,13 @@
 package com.bsquare.core.usecases
 
+import com.bsquare.core.common.constants.Data
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.Resource.Error
 import com.bsquare.core.common.constants.Resource.Success
 import com.bsquare.core.common.enums.EmitType
-import com.bsquare.core.common.extras.Data
 import com.bsquare.core.domain.repositories.login.LoginRepository
+import com.bsquare.core.utils.handleFailedResponse
 import kotlinx.coroutines.flow.flow
-import com.bsquare.core.common.constants.handleFailedResponse
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
@@ -20,7 +21,8 @@ class LoginUseCase @Inject constructor(
                 response.data?.apply {
                     when (status) {
                         true -> {
-                            emit(Data(type = EmitType.Inform, null))
+                            emit(Data(type = EmitType.Inform, message))
+                            emit(Data(type = EmitType.Navigate, Destination.DashboardScreen))
                         }
                         else -> {
                             emit(Data(EmitType.BackendError, message))
@@ -30,7 +32,11 @@ class LoginUseCase @Inject constructor(
             }
             is Error -> {
                 emit(Data(EmitType.Loading, false))
-
+                handleFailedResponse(
+                    response = response,
+                    message = response.message,
+                    emitType = EmitType.NetworkError
+                )
             }
             else -> {
 

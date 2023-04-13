@@ -21,6 +21,8 @@ sealed class Destination(
 
  object LoginScreen : NoArgumentsDestination(AppRoutes.LOGIN)
 
+ object DashboardScreen : NoArgumentsDestination(AppRoutes.DASHBOARD)
+
 
 
 

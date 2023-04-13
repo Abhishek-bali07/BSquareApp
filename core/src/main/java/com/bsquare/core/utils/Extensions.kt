@@ -1,6 +1,8 @@
-package com.bsquare.core.common.constants
+package com.bsquare.core.utils
 
 
+import com.bsquare.core.common.constants.Data
+import com.bsquare.core.common.constants.Resource
 import com.bsquare.core.common.enums.EmitType
 import kotlinx.coroutines.flow.FlowCollector
 

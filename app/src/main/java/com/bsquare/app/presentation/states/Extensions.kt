@@ -2,7 +2,6 @@ package com.bsquare.app.presentation.states
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -11,18 +10,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.UiComposable
+import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.*
-import com.bsquare.app.R
 import com.bsquare.app.application.BSquareApp
 import com.bsquare.app.utills.helper_impl.SavableMutableState
-import com.bsquare.core.common.constants.Resource
-import org.w3c.dom.TypeInfo
-import java.io.File
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun Int.resourceString(): String {
@@ -222,3 +221,17 @@ fun bottomToUp() = slideInVertically(
     targetOffsetY = {-it},
     animationSpec = animationSpec()
 ) + fadeOut(animationSpec = animationSpec())
+
+fun Modifier.statusBarColor(color: Color = Color.White): Modifier = composed {
+    val sysUiController = rememberSystemUiController()
+    sysUiController.setStatusBarColor(
+        color = color,
+        darkIcons = true,
+        transformColorForLightContent = { color }
+    )
+    this
+}
+
+@UiComposable
+@Composable
+fun Int.resourceImage() = painterResource(id = this)

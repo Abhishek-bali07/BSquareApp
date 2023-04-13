@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BSquareApp</string>
+    <string name="login">LOGIN</string>
+    <string name="get_started">Get Started</string>
+    <string name="this_thorws_an_error">This api throws an error.</string>
+    <string name="splash_description">Lorem Ipsum is simply dummy of the printing and typesetting industry. Lorem Ipsum has been the.</string>
+    <string name="update">Update App</string>
+    <string name="version_update">Version Update</string>
+    <string name="later">Later</string>
+</resources>

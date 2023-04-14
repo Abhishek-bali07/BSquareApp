@@ -54,7 +54,9 @@ class LoginViewModel @Inject constructor(
         initialData = false
     )
     val loginLoading = SavableMutableState(
-        key = UiData.LoginApiLoading, savedStateHandle = savedStateHandle, initialData = false
+        key = UiData.LoginApiLoading,
+        savedStateHandle = savedStateHandle,
+        initialData = false
     )
 
 

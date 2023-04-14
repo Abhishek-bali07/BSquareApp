@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bsquare.app.R
 import com.bsquare.app.presentation.states.ComposeLaunchEffect
-import com.bsquare.app.presentation.ui.customise.AppButton
-import com.bsquare.app.presentation.ui.customise.MobileNumberValidator
+import com.bsquare.app.presentation.ui.custom_composable.AppButton
+import com.bsquare.app.presentation.ui.custom_composable.MobileNumberValidator
 import com.bsquare.app.presentation.ui.view_models.LoginViewModel
 
 

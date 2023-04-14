@@ -1,4 +1,4 @@
-package com.bsquare.app.presentation.ui.customise
+package com.bsquare.app.presentation.ui.custom_composable
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.Text
 
 import androidx.compose.runtime.Composable
@@ -22,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bsquare.app.presentation.states.*
 
-@OptIn(ExperimentalAnimationApi::class)
+
+
 @Composable
 fun AppButton (
     enable: Boolean,

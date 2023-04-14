@@ -1,6 +1,7 @@
 package com.bsquare.app.presentation.ui.screens.dashboard
 
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,29 +10,32 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.bsquare.app.R
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.states.resourceString
 import com.bsquare.app.presentation.states.statusBarColor
-import com.bsquare.app.presentation.ui.customise.Features
+import com.bsquare.core.entities.Feature
 import com.bsquare.app.presentation.ui.view_models.DashboardViewModel
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DashboardScreen(
     dashboardViewModel: DashboardViewModel = hiltViewModel(),
@@ -48,22 +52,17 @@ fun DashboardScreen(
     ) {
 
         GreetingSection(dashboardViewModel)
-        SurfaceSection(List)
+        FeatureSection(features = dashboardViewModel.features)
+        CalenderSection()
+
     }
 
 }
 
-/*Box(
-   modifier = Modifier
-      .statusBarColor(color = Color.Red)
-      .background(color = Color.Red)
-      .fillMaxSize(),
-   contentAlignment = Alignment.TopCenter
-){
+@Composable
+fun CalenderSection() {
 
-}*/
-
-
+}
 
 
 @Composable
@@ -121,37 +120,119 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
 }
 
 
+@ExperimentalFoundationApi
 @Composable
-fun SurfaceSection(features:List<Features>) {
+fun FeatureSection(features: List<Feature>) {
     Surface(
         modifier = Modifier
             .fillMaxSize(),
         color = Color.White,
         shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
     ) {
-        LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
+            modifier = Modifier.fillMaxHeight()
 
-        )
+        ) {
+            items(features.size) {
+                FeatureItem(feature = features[it])
+            }
+
+        }
 
     }
 }
 
 
-
-
 @Composable
 fun FeatureItem(
-    features: Features
-){
-   BoxWithConstraints(
-       modifier = Modifier
-           .padding(7.5.dp)
-           .aspectRatio(1f)
-           .clip(RoundedCornerShape(10.dp))
-           .background(color = Color.Blue)
-   ) {
-        val  width = constraints.maxWidth
-        val  height = constraints.maxHeight
+    feature: Feature
+) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .padding(7.5.dp)
+            .aspectRatio(1.2f)
+            .clip(RoundedCornerShape(10.dp))
+            .background(color = Color(android.graphics.Color.parseColor(feature.bgColor)))
+    )
 
-   }
+    /*Card(
+        modifier = Modifier
+            .padding(7.5.dp),
+        shape = RoundedCornerShape(12.dp),
+        backgroundColor = Color(android.graphics.Color.parseColor(feature.bgColor))
+    ) */
+    {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(15.dp)
+        ) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(feature.identityIconUrl)
+                    .decoderFactory(SvgDecoder.Factory())
+                    .crossfade(enable = true)
+                    .error(R.drawable.gslogo)
+                    .size(150)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.align(Alignment.TopStart)
+            )
+
+          /*  Icon(
+                painter =  ,
+                contentDescription = "",
+                tint = Color.White,
+                modifier = Modifier.align(Alignment.TopStart)
+            )*/
+            Text(
+                text = feature.quantity.toString(),
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.align(Alignment.TopEnd)
+
+            )
+
+            Text(
+                text = feature.type,
+                style = TextStyle(
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                lineHeight = 26.sp,
+                modifier = Modifier.align(Alignment.BottomStart)
+            )
+            IconButton(
+                modifier = Modifier
+                    .size(24.dp)
+                    .width(0.09.dp)
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(color = Color.White)
+                    .align(Alignment.BottomEnd),
+                onClick = {}
+            ) {
+                Icon(
+                    painter = R.drawable.eye.resourceImage(),
+                    contentDescription = "eye",
+                  //  tint = Color(android.graphics.Color.parseColor(feature.bgColor)),
+
+
+
+                )
+
+            }
+
+
+
+
+        }
+
+
+    }
 }

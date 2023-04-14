@@ -1,4 +1,4 @@
-package com.bsquare.app.presentation.ui.customise
+package com.bsquare.app.presentation.ui.custom_composable
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString

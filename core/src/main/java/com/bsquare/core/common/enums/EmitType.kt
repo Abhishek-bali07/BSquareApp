@@ -8,6 +8,7 @@ enum class EmitType {
     Navigate,
     Loading,
     Inform,
+    FeaturesItem,
     PendingOrders,
     CompletedOrders,
     PaymentInfomationData,

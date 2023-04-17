@@ -24,6 +24,9 @@ sealed class Destination(
  object DashboardScreen : NoArgumentsDestination(AppRoutes.DASHBOARD)
 
 
+ object LeadScreen : NoArgumentsDestination(AppRoutes.LEAD)
+
+
 
 
 }

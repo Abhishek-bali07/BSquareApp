@@ -1,7 +1,6 @@
 package com.bsquare.app.presentation.ui.view_models
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castListToRequiredTypes
@@ -21,7 +20,7 @@ class DashboardViewModel @Inject constructor(
     private val appNavigator: AppNavigator,
 ) : ViewModel() {
 
-
+   var date by mutableStateOf("")
     val shortDetail = mutableStateOf<ShortDetails?>(null)
     val features = mutableStateListOf<Feature>()
     init {
@@ -29,11 +28,12 @@ class DashboardViewModel @Inject constructor(
     }
 
 
-    fun getFeatureData() {
-        useCase.FeatureData().onEach {
+     fun getFeatureData() {
+        useCase.FeatureData(selectedDate = date).onEach {
             when (it.type) {
                 EmitType.FeaturesItem -> {
                     it.value?.castListToRequiredTypes<Feature>()?.let {
+                        features.clear()
                         features.addAll(it)
                     }
                 }
@@ -41,6 +41,9 @@ class DashboardViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+
+
 
 
 }

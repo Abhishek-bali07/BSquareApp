@@ -5,5 +5,7 @@ import com.bsquare.core.entities.responses.FeaturesResponse
 
 interface DashboardRepository {
 
-    suspend fun  seefeatures(userId: String) :Resource<FeaturesResponse>
+    suspend fun  seefeatures(userId: String, selectedDate:String) :Resource<FeaturesResponse>
+
+
 }

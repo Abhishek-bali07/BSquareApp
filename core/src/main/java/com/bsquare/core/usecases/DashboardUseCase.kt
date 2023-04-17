@@ -11,9 +11,9 @@ import javax.inject.Inject
 class DashboardUseCase @Inject constructor(
     private val prefs: AppStore, private val repository: DashboardRepository
 ) {
-    fun FeatureData() = flow<Data> {
+    fun FeatureData(selectedDate : String) = flow<Data> {
         emit(Data(EmitType.Loading, value = true))
-        when (val response = repository.seefeatures(prefs.userId())) {
+        when (val response = repository.seefeatures(prefs.userId(),selectedDate)) {
             is Resource.Success -> {
                 emit(Data(EmitType.Loading, false))
                 response.data?.apply {
@@ -33,4 +33,7 @@ class DashboardUseCase @Inject constructor(
             else -> {}
         }
     }
+
+
+
 }

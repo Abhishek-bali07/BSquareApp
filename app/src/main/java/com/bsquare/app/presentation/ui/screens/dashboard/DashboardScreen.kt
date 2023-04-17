@@ -1,6 +1,7 @@
 package com.bsquare.app.presentation.ui.screens.dashboard
 
 
+ import android.widget.CalendarView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,16 +24,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.bsquare.app.R
-import com.bsquare.app.presentation.states.resourceImage
-import com.bsquare.app.presentation.states.resourceString
-import com.bsquare.app.presentation.states.statusBarColor
+ import com.bsquare.app.presentation.states.*
+ import com.bsquare.app.presentation.ui.view_models.DashboardViewModel
 import com.bsquare.core.entities.Feature
-import com.bsquare.app.presentation.ui.view_models.DashboardViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -52,18 +52,34 @@ fun DashboardScreen(
     ) {
 
         GreetingSection(dashboardViewModel)
-        FeatureSection(features = dashboardViewModel.features)
-        CalenderSection()
+        FeatureSection(features = dashboardViewModel.features, dashboardViewModel)
+
 
     }
 
 }
-
 @Composable
-fun CalenderSection() {
-
+fun ColumnScope.CalenderSection(
+    viewModel: DashboardViewModel) {
+    Card(
+        modifier = Modifier.padding(bottom = 10.dp)
+    ) {
+        AndroidView(factory = {CalendarView(it)},
+            modifier = Modifier.weight(1f),
+            update = {
+                it.setOnDateChangeListener { calendarView, year, month, day ->
+                    viewModel.date = "$year - ${month+1}- $day"
+                    viewModel.getFeatureData()
+                }
+            })
+    }
 }
 
+
+@Composable
+fun MyUI() {
+
+}
 
 @Composable
 fun GreetingSection(dashboardViewModel: DashboardViewModel) {
@@ -122,24 +138,47 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
 
 @ExperimentalFoundationApi
 @Composable
-fun FeatureSection(features: List<Feature>) {
+fun FeatureSection(features: List<Feature>, dashboardViewModel: DashboardViewModel) {
     Surface(
         modifier = Modifier
             .fillMaxSize(),
         color = Color.White,
         shape = RoundedCornerShape(topStart = 35.dp, topEnd = 35.dp)
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 100.dp),
-            modifier = Modifier.fillMaxHeight()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-            items(features.size) {
-                FeatureItem(feature = features[it])
+            if (features.isNotEmpty()){
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 20.dp, top = 10.dp),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+
+                ) {
+                    items(features.size) {
+                        FeatureItem(feature = features[it])
+                    }
+
+                }
+            }else{
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(bottom = 5.dp),
+                    color = Color.Black,
+                    strokeWidth = 5.dp
+                )
             }
 
+            CalenderSection(dashboardViewModel)
         }
+
+
 
     }
 }
@@ -156,13 +195,6 @@ fun FeatureItem(
             .clip(RoundedCornerShape(10.dp))
             .background(color = Color(android.graphics.Color.parseColor(feature.bgColor)))
     )
-
-    /*Card(
-        modifier = Modifier
-            .padding(7.5.dp),
-        shape = RoundedCornerShape(12.dp),
-        backgroundColor = Color(android.graphics.Color.parseColor(feature.bgColor))
-    ) */
     {
         Box(
             modifier = Modifier
@@ -180,13 +212,6 @@ fun FeatureItem(
                 contentDescription = null,
                 modifier = Modifier.align(Alignment.TopStart)
             )
-
-          /*  Icon(
-                painter =  ,
-                contentDescription = "",
-                tint = Color.White,
-                modifier = Modifier.align(Alignment.TopStart)
-            )*/
             Text(
                 text = feature.quantity.toString(),
                 style = TextStyle(
@@ -215,21 +240,17 @@ fun FeatureItem(
                     .clip(RoundedCornerShape(28.dp))
                     .background(color = Color.White)
                     .align(Alignment.BottomEnd),
-                onClick = {}
+                onClick = {
+
+                }
             ) {
                 Icon(
                     painter = R.drawable.eye.resourceImage(),
                     contentDescription = "eye",
-                  //  tint = Color(android.graphics.Color.parseColor(feature.bgColor)),
+                    tint = Color(android.graphics.Color.parseColor(feature.bgColor)),
 
-
-
-                )
-
+                    )
             }
-
-
-
 
         }
 

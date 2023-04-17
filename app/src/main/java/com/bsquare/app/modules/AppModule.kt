@@ -5,11 +5,13 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.bsquare.app.data.repositories.DashboardRepositoryImpl
+import com.bsquare.app.data.repositories.LeadRepositoryImpl
 import com.bsquare.app.data.repositories.LoginRepositoryImpl
 import com.bsquare.app.data.repositories.SplashRepositoryImpl
 import com.bsquare.app.utills.helper_impl.AppStoreImpl
 import com.bsquare.core.domain.repositories.dashboard.DashboardRepository
 import com.bsquare.core.domain.repositories.intro.SplashRepository
+import com.bsquare.core.domain.repositories.lead.LeadRepository
 import com.bsquare.core.domain.repositories.login.LoginRepository
 import com.bsquare.core.utils.helper.AppStore
 import dagger.Binds
@@ -50,4 +52,8 @@ interface AppModule {
 
     @Binds
     fun bindDashboardRepository(repo:DashboardRepositoryImpl) : DashboardRepository
+
+
+    @Binds
+    fun bindLeadRepository(repo: LeadRepositoryImpl) : LeadRepository
 }

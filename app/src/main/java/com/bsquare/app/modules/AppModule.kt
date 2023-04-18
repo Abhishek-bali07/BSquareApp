@@ -55,5 +55,5 @@ interface AppModule {
 
 
     @Binds
-    fun bindLeadRepository(repo: LeadRepositoryImpl) : LeadRepository
+    fun bindLeadRepository(repo:LeadRepositoryImpl) : LeadRepository
 }

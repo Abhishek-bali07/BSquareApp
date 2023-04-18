@@ -9,6 +9,7 @@ enum class EmitType {
     Loading,
     Inform,
     FeaturesItem,
+    LeadsItem,
     PendingOrders,
     CompletedOrders,
     PaymentInfomationData,

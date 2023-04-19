@@ -5,4 +5,5 @@ object AppRoutes {
     const val LOGIN = "login"
     const val DASHBOARD = "dashboard"
     const val LEAD = "lead"
+    const val COMPANY = "company"
 }

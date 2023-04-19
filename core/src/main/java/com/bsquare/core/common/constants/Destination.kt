@@ -26,7 +26,7 @@ sealed class Destination(
 
  object LeadScreen : NoArgumentsDestination(AppRoutes.LEAD)
 
-
+ object CompanyDetailScreen: NoArgumentsDestination(AppRoutes.COMPANY)
 
 
 }

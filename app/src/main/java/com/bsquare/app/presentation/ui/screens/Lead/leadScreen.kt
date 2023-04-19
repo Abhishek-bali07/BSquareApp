@@ -2,9 +2,11 @@ package com.bsquare.app.presentation.ui.screens.Lead
 
 
 import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType.Companion.Uri
+
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,6 +33,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.bsquare.app.R
 import com.bsquare.app.presentation.states.resourceImage
+import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.LeadViewModel
 import com.bsquare.core.entities.LeadData
 import com.bsquare.core.entities.Leads
@@ -39,6 +42,7 @@ import com.bsquare.core.entities.Leads
 @Composable
 fun LeadScreen(
     leadViewModel: LeadViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
@@ -54,7 +58,7 @@ fun LeadScreen(
                 backgroundColor = Color.Red, elevation = 2.dp, title = {
                     Text(
                         "Leads", style = TextStyle(
-                            color = Color.White, textAlign = TextAlign.Center
+                            color = Color.White, textAlign = TextAlign.Center,fontSize = 20.sp
                         )
                     )
                 }, navigationIcon = {
@@ -85,7 +89,7 @@ fun LeadScreen(
 
                 })
 
-            TodayListSection(leads = leadViewModel.leads)
+            TodayListSection(leads = leadViewModel.leads,leadViewModel, baseViewModel)
 
         }
 
@@ -93,7 +97,7 @@ fun LeadScreen(
 }
 
 @Composable
-fun TodayListSection(leads: List<Leads>) {
+fun TodayListSection(leads: List<Leads>,leadViewModel: LeadViewModel, baseViewModel: BaseViewModel) {
     val screenHeightBy40 = LocalConfiguration.current.screenHeightDp * 0.40f
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -119,7 +123,10 @@ fun TodayListSection(leads: List<Leads>) {
                         Text(modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),text = item.date, style = TextStyle.Default.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold))
                         LazyColumn(modifier = Modifier.height(screenHeightBy40.dp)) {
                             items(item.leadData) {
-                                LeadDataItem(leadData = it)
+                                LeadDataItem(leadData = it) {
+                                    baseViewModel.leadToLeadDetailsArg.value = it.id
+                                    leadViewModel.onCardClicked()
+                                }
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
 
@@ -137,11 +144,13 @@ fun TodayListSection(leads: List<Leads>) {
 
 @Composable
 fun LeadDataItem(
-    leadData: LeadData
+    leadData: LeadData,
+    onItemClicked: ()->Unit
 ) {
     val ctx = LocalContext.current
+
     Card(
-        modifier = Modifier,
+        modifier = Modifier.clickable(onClick = onItemClicked),
         shape = RoundedCornerShape(10.dp), elevation = 3.dp
     ) {
         Row(
@@ -195,7 +204,7 @@ fun LeadDataItem(
                         .clip(RoundedCornerShape(25.dp))
                         .background(color = Color(0xffFF5E00).copy(alpha = .5f))
                 ) {
-                    Text(
+                    Text(modifier =Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
                         text = leadData.type,
                         style = TextStyle(
                             color = Color(0xffFF5E00), fontSize = 13.sp, fontWeight = FontWeight.Bold

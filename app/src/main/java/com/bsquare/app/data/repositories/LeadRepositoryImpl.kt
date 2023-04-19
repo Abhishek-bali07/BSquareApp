@@ -21,6 +21,7 @@ class LeadRepositoryImpl @Inject constructor() : LeadRepository {
                     Leads(date = "27th, July, 2023",
                         leadData = MutableList(4) { idx ->
                             LeadData(
+                                id = "ID_${idx+1}",
                                 companyName = "INFOSYS",
                                 type = "Hot",
                                 leadAmount = "2500",

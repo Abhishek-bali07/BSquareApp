@@ -10,6 +10,7 @@ enum class EmitType {
     Inform,
     FeaturesItem,
     LeadsItem,
+    LeadsDetails,
     PendingOrders,
     CompletedOrders,
     PaymentInfomationData,

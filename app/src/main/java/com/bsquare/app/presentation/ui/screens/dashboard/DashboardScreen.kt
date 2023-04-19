@@ -76,10 +76,7 @@ fun ColumnScope.CalenderSection(
 }
 
 
-@Composable
-fun MyUI() {
 
-}
 
 @Composable
 fun GreetingSection(dashboardViewModel: DashboardViewModel) {

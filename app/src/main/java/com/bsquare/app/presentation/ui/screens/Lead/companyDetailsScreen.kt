@@ -2,29 +2,32 @@ package com.bsquare.app.presentation.ui.screens.Lead
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bsquare.app.R
-import com.bsquare.app.presentation.states.resourceImage
-import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import com.bsquare.app.presentation.states.ComposeLaunchEffect
+import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
+import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
+
 
 @Composable
 fun CompanyDetailScreen(
@@ -36,7 +39,7 @@ fun CompanyDetailScreen(
         scaffoldState = scaffoldState
     ) { paddingValues ->
         Column(
-            modifier = androidx.compose.ui.Modifier
+            modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
@@ -45,7 +48,8 @@ fun CompanyDetailScreen(
                 elevation = 2.dp,
                 title = {
                     Text(
-                        "Infosys", style = TextStyle(
+                        "${companyDetailViewModel.companyDetails.value?.companyName}",
+                        style = TextStyle(
                             color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp
                         )
                     )
@@ -60,8 +64,9 @@ fun CompanyDetailScreen(
                     )
                 }
             )
-            CompanyTypeSection()
-            CompanyDetailSection()
+            CompanyTypeSection(companyDetailViewModel)
+            CompanyDetailSection(companyDetailViewModel)
+
 
         }
     }
@@ -75,13 +80,23 @@ fun CompanyDetailScreen(
 
 }
 
+
+
 @Composable
-fun CompanyDetailSection() {
+fun CompanyDetailSection(
+    companyDetailViewModel: CompanyDetailViewModel,
+
+
+) {
+    val ctx = LocalContext.current
+
     Surface(
         modifier = Modifier
             .fillMaxSize(),
         color = Color.White,
     ) {
+
+
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
@@ -95,7 +110,7 @@ fun CompanyDetailSection() {
                 ) {
                     Text(modifier = Modifier
                         .padding(horizontal = 5.dp, vertical = 15.dp),
-                        text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.")
+                        text = "${companyDetailViewModel.companyDetails.value?.leadDescription}", textAlign = TextAlign.Center)
 
                     Surface(
                         modifier = Modifier
@@ -109,7 +124,7 @@ fun CompanyDetailSection() {
                                 vertical = 3.dp,
                                 horizontal = 5.dp
                             ),
-                            text = "35000",
+                            text = "${companyDetailViewModel.companyDetails.value?.leadAmount}",
                             style = TextStyle(textAlign = TextAlign.Center,
                                 color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold))
 
@@ -117,7 +132,8 @@ fun CompanyDetailSection() {
                     }
 
                     Row(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 25.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
@@ -129,10 +145,24 @@ fun CompanyDetailSection() {
                             .clip(RoundedCornerShape(28.dp))
                             .background(color = Color(0xff1ED261)),
                             onClick = {
+                                val u = Uri.parse("tel:" + companyDetailViewModel.companyDetails.value?.companyNumber)
+
+
+                                val i = Intent(Intent.ACTION_DIAL, u)
+                                i.resolveActivity(ctx.packageManager).apply {
+                                    ctx.startActivity(i)
+                                }
+
+                              /*  try {
+
+                                } catch (s: SecurityException) {
+                                    Toast.makeText(ctx, "An error occurred", Toast.LENGTH_LONG)
+                                        .show()
+                                }*/
 
                             }) {
                             Icon(
-                                painter = R.drawable.call.resourceImage(),
+                                painter = R.drawable.caller.resourceImage(),
                                 contentDescription = "call",
                                 tint = Color.White
 
@@ -148,8 +178,8 @@ fun CompanyDetailSection() {
                             onClick = {
                             }) {
                             Icon(
-                                painter = R.drawable.call.resourceImage(),
-                                contentDescription = "call",
+                                painter = R.drawable.message.resourceImage(),
+                                contentDescription = "message",
                                 tint = Color.White
 
                             )
@@ -161,9 +191,18 @@ fun CompanyDetailSection() {
                             .clip(RoundedCornerShape(28.dp))
                             .background(color = Color(0xffEF2424)),
                             onClick = {
+
+                                val uri = Uri.parse("mailto:${companyDetailViewModel.companyDetails.value?.companyEmail}")
+                                    .buildUpon()
+                                    .build()
+
+                                val emailIntent = Intent(Intent.ACTION_SENDTO, uri)
+                                emailIntent.resolveActivity(ctx.packageManager).apply {
+                                    ctx.startActivity(emailIntent)
+                                }
                             }) {
                             Icon(
-                                painter = R.drawable.call.resourceImage(),
+                                painter = R.drawable.email.resourceImage(),
                                 contentDescription = "call",
                                 tint = Color.White
 
@@ -175,9 +214,17 @@ fun CompanyDetailSection() {
                             .clip(RoundedCornerShape(28.dp))
                             .background(color = Color(0xff3DE912)),
                             onClick = {
+
+                                val url = Uri.parse("https://api.whatsapp.com/send?phone=${companyDetailViewModel.companyDetails.value?.companyNumber}")
+                                val i = Intent(Intent.ACTION_VIEW,url)
+                               i.resolveActivity(ctx.packageManager).apply {
+                                   ctx.startActivity(i)
+                               }
+
+
                             }) {
                             Icon(
-                                painter = R.drawable.call.resourceImage(),
+                                painter = R.drawable.wlogo.resourceImage(),
                                 contentDescription = "call",
                                 tint = Color.White
 
@@ -190,9 +237,20 @@ fun CompanyDetailSection() {
                             .clip(RoundedCornerShape(28.dp))
                             .background(color = Color(0xffFF5E00)),
                             onClick = {
+                                val geoUri =Uri.parse( "http://maps.google.com/maps?q=loc:${companyDetailViewModel.companyDetails.value?.latLong?.lat}," +
+                                        "${companyDetailViewModel.companyDetails.value?.latLong?.lng}")
+
+
+                                var MapIntent = Intent(
+                                    Intent.ACTION_VIEW, geoUri
+                                )
+                                MapIntent.resolveActivity(ctx.packageManager).apply {
+                                    ctx.startActivity(MapIntent)
+                                }
+
                             }) {
                             Icon(
-                                painter = R.drawable.call.resourceImage(),
+                                painter = R.drawable.location.resourceImage(),
                                 contentDescription = "call",
                                 tint = Color.White
 
@@ -212,60 +270,151 @@ fun CompanyDetailSection() {
 }
 
 @Composable
-fun CompanyTypeSection() {
+fun CompanyTypeSection(companyDetailViewModel: CompanyDetailViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = androidx.compose.ui.Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.LightGray)
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+            .padding(horizontal = 25.dp, vertical = 10.dp),
     ) {
-        StatusSection()
-        LabelSection()
+        StatusSection(companyDetailViewModel)
+        LabelSection(companyDetailViewModel)
     }
 }
 
 @Composable
-fun LabelSection() {
-    Row() {
-        Text(text = "Label:")
-        Box(
-            modifier = androidx.compose.ui.Modifier
-                .padding(horizontal = 20.dp)
-                .clip(RoundedCornerShape(25.dp))
-                .background(color = Color.White.copy(alpha = .5f))
-        ) {
-            Text(
-                modifier = androidx.compose.ui.Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
-                text = "WARM",
-                style = TextStyle(
-                    color = Color(0xffFF5E00), fontSize = 13.sp, fontWeight = FontWeight.Bold
-                ),
-            )
+fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel) {
+    Row(
+        modifier = Modifier.weight(1f),
+
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Text(text = "Status:")
+            Surface(
+                modifier = Modifier
+                    .size(width = 100.dp, height = 30.dp)
+                    .padding(horizontal = 20.dp)
+                    .clip(RoundedCornerShape(25.dp))
+                    .background(color = Color.White.copy(alpha = .5f))
+            ){
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.padding(
+                            vertical = 3.dp,
+                            horizontal = 5.dp
+                        ),
+                        text = companyDetailViewModel.lSelectedText.value,
+                        style = TextStyle(
+                            color = Color(0xffFF5E00),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+
+                    IconButton(onClick = {
+                        companyDetailViewModel.isExpanded.value = !companyDetailViewModel.isExpanded.value
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = ""
+                        )
+                    }
+                }
+            }
+        }
+
+        DropdownMenu(
+            expanded = companyDetailViewModel.isExpanded.value,
+            onDismissRequest = { companyDetailViewModel.isExpanded.value = false },
+
+            ) {
+            companyDetailViewModel.companyDetails.value?.leadStatus?.forEach{
+                    text ->
+                DropdownMenuItem(onClick = {
+                    companyDetailViewModel.lSelectedText.value = text.statusName
+                    companyDetailViewModel.isExpanded.value = false
+                }) {
+                    Text(text = text.statusName)
+                }
+
+            }
         }
 
     }
 }
 
 @Composable
-fun StatusSection() {
-    Row() {
-        Text(text = "Status:")
-        Box(
-            modifier = androidx.compose.ui.Modifier
-                .padding(horizontal = 20.dp)
-                .clip(RoundedCornerShape(25.dp))
-                .background(color = Color.White.copy(alpha = .5f))
+fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel) {
+    Row(
+        modifier = Modifier.weight(1f),
+
+
         ) {
-            Text(
-                modifier = androidx.compose.ui.Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
-                text = "type",
-                style = TextStyle(
-                    color = Color(0xffFF5E00), fontSize = 13.sp, fontWeight = FontWeight.Bold
-                ),
-            )
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(text = "Label:")
+            Surface(
+                modifier = Modifier
+                    .size(width = 100.dp, height = 30.dp)
+                    .padding(horizontal = 20.dp)
+                    .clip(RoundedCornerShape(25.dp))
+                    .background(color = Color.White.copy(alpha = .5f))
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.padding(
+                            vertical = 3.dp,
+                            horizontal = 5.dp
+                        ),
+                        text = companyDetailViewModel.mSelectedText.value,
+                        style = TextStyle(
+                            color = Color(0xffFF5E00),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+
+                    IconButton(onClick = {
+                        companyDetailViewModel.isMenuExpanded.value = !companyDetailViewModel.isMenuExpanded.value
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = ""
+                        )
+                    }
+                }
+
+            }
+        }
+
+        DropdownMenu(
+            expanded = companyDetailViewModel.isMenuExpanded.value,
+            onDismissRequest = { companyDetailViewModel.isMenuExpanded.value = false },
+
+            ) {
+            companyDetailViewModel.companyDetails.value?.leadLabel?.forEach{
+                    text ->
+                DropdownMenuItem(onClick = {
+                    companyDetailViewModel.mSelectedText.value = text.labelName
+                    companyDetailViewModel.isMenuExpanded.value = false
+                }) {
+                    Text(text = text.labelName)
+                }
+
+            }
         }
 
     }
+
 }
+
+
+
+
+

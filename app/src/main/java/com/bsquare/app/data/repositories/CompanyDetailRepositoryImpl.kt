@@ -7,6 +7,7 @@ import com.bsquare.core.entities.Latlong
 import com.bsquare.core.entities.LeadDetailsData
 import com.bsquare.core.entities.Status
 import com.bsquare.core.entities.responses.CompanyDetailsResponse
+import com.bsquare.core.entities.responses.UpdateCompanyDetailsResponse
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
@@ -49,6 +50,13 @@ class DeatilRepositoryImpl @Inject constructor() : CompanyDetailsRepository {
 
             )
         ))
+    }
+
+    override suspend fun addTimeleneData(
+        userId: String,
+        leadID: String
+    ): Resource<UpdateCompanyDetailsResponse> {
+        TODO("Not yet implemented")
     }
 
 }

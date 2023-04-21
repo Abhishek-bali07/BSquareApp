@@ -110,6 +110,11 @@ dependencies {
     // The compose calendar library
     implementation "com.kizitonwose.calendar:compose:2.3.0"
 
+    //accompanist
+    def accompanist_version = "0.24.9-beta"
+    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
+
 
 
 

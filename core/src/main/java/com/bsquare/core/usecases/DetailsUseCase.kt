@@ -32,4 +32,26 @@ class DetailsUseCase @Inject constructor(
            else -> {}
        }
    }
+
+
+    fun addDetails(leadID: String, text: String, tabId: String) = flow<Data> {
+        emit(Data(EmitType.Loading, value = true))
+        when(val response = repository.addTimelineData(leadID,prefs.userId())){
+            is Resource.Success -> {
+                emit(Data(EmitType.Loading, false))
+                response.data?.apply {
+                    when(status){
+                        true ->{
+                            emit(Data(type = EmitType.LeadsDetails, value =" "))
+                        }
+
+                        else -> {
+                            emit(Data(EmitType.BackendError, message))
+                        }
+                    }
+                }
+            }
+            else -> {}
+        }
+    }
 }

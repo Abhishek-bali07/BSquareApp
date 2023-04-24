@@ -36,15 +36,14 @@ class DetailsUseCase @Inject constructor(
 
     fun addDetails(leadID: String, text: String, tabId: String) = flow<Data> {
         emit(Data(EmitType.Loading, value = true))
-        when(val response = repository.addTimelineData(leadID,prefs.userId())){
+        when(val response = repository.addTimelineData(leadID,prefs.userId(), tabId, text)){
             is Resource.Success -> {
                 emit(Data(EmitType.Loading, false))
                 response.data?.apply {
-                    when(status){
+                    when(status && isAdded){
                         true ->{
-                            emit(Data(type = EmitType.LeadsDetails, value =" "))
+                            emit(Data(type = EmitType.LeadAdded, value = this.isAdded))
                         }
-
                         else -> {
                             emit(Data(EmitType.BackendError, message))
                         }
@@ -54,4 +53,29 @@ class DetailsUseCase @Inject constructor(
             else -> {}
         }
     }
+
+
+    fun removeDetails(leadID: String, text: String, tabId: String) = flow<Data> {
+        emit(Data(EmitType.Loading, value = true))
+        when(val response =  repository.removeTimelineData(leadID, prefs.userId(), tabId, text)){
+            is Resource.Success -> {
+                emit(Data(EmitType.Loading, false))
+                response.data?.apply{
+                    when(status && isRemoved){
+                        true ->{
+                            emit(Data(type = EmitType.LeadRemoved, value = this.isRemoved))
+                        }
+                        else -> {
+
+                            emit(Data(EmitType.BackendError, message))
+                        }
+
+                    }
+                }
+            }
+
+            else -> {}
+        }
+    }
+
 }

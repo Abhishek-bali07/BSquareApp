@@ -7,6 +7,7 @@ import com.bsquare.core.entities.Latlong
 import com.bsquare.core.entities.LeadDetailsData
 import com.bsquare.core.entities.Status
 import com.bsquare.core.entities.responses.CompanyDetailsResponse
+import com.bsquare.core.entities.responses.RemoveTimelineResponse
 import com.bsquare.core.entities.responses.UpdateCompanyDetailsResponse
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -31,20 +32,34 @@ class DeatilRepositoryImpl @Inject constructor() : CompanyDetailsRepository {
                     lat = 22.5648,
                     lng = 88.2356
                 ),
-                leadLabel = MutableList(3){ idx ->
-                    Label(
-                          labelId = "1",
-                          labelName = "WARM",
-                          isSelected = true
-                        )
-                },
-                leadStatus = MutableList(2){ idx ->
-                    Status(
-                        statusId = "1",
-                        statusName = "NEW",
+                leadLabel = listOf(Label(
+                        labelId = "1",
+                        labelName = "WARM",
                         isSelected = true
-                    )
-                }
+                    ),
+                 Label(
+                    labelId = "2",
+                    labelName = "Hot",
+                    isSelected = true
+                ),
+                Label(
+                labelId = "3",
+                labelName = "Cold",
+                isSelected = true
+            )),
+                leadStatus = listOf(Status(
+                    statusId = "1",
+                    statusName = "NEW",
+                    isSelected = true
+                ),Status(
+                    statusId = "1",
+                    statusName = "Old",
+                    isSelected = true
+                )),
+                activity = listOf("oiuuyv","oihoihoib"),
+                task = emptyList(),
+                info = emptyList(),
+                note = emptyList()
 
 
 
@@ -52,11 +67,37 @@ class DeatilRepositoryImpl @Inject constructor() : CompanyDetailsRepository {
         ))
     }
 
-    override suspend fun addTimeleneData(
+    override suspend fun addTimelineData(
         userId: String,
-        leadID: String
+        leadID: String,
+        tabId: String,
+        text: String
     ): Resource<UpdateCompanyDetailsResponse> {
-        TODO("Not yet implemented")
+        delay(2000L)
+        return  Resource.Success(
+            UpdateCompanyDetailsResponse(
+                status = true,
+                message = "Success",
+                isAdded = true
+            )
+        )
     }
+
+    override suspend fun removeTimelineData(
+        userId: String,
+        leadID: String,
+        tabId: String,
+        text: String
+    ): Resource<RemoveTimelineResponse> {
+        delay(2000L)
+        return  Resource.Success(
+            RemoveTimelineResponse(
+                status = true,
+                message = "Success",
+                isRemoved = true
+            )
+        )
+    }
+
 
 }

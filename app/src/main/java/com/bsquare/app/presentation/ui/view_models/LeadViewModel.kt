@@ -45,7 +45,7 @@ class LeadViewModel @Inject constructor(
         appNavigator.tryNavigateTo(
             Destination.CompanyDetailScreen(),
             popUpToRoute = Destination.LeadScreen(),
-            inclusive = true,
+            inclusive = false,
             isSingleTop = true
         )
     }

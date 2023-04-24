@@ -23,7 +23,8 @@ import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddNote(
-    companyDetailViewModel: CompanyDetailViewModel
+    companyDetailViewModel: CompanyDetailViewModel,
+    tabInt: Int
 ) {
 
     Column(
@@ -45,7 +46,7 @@ fun AddNote(
                 .clip(RoundedCornerShape(25.dp))
                 .background(color = Color(0xffEF2424)),
                 onClick = {
-                    companyDetailViewModel.addNote(companyDetailViewModel.writenNote.value)
+                    companyDetailViewModel.addNote(companyDetailViewModel.writenNote.value, tabId = tabInt.toString())
                 }) {
                 Row(
                     modifier = Modifier.background(color =  Color(0xffEF2424)),
@@ -103,7 +104,7 @@ fun AddNote(
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(text = item)
-                        IconButton(onClick = { companyDetailViewModel.removeNote(item) }) {
+                        IconButton(onClick = { companyDetailViewModel.removeNote(item, tabId = tabInt.toString()) }) {
                             Icon(
                                 painter = R.drawable.mcircle.resourceImage(),
                                 contentDescription = null

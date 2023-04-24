@@ -3,6 +3,7 @@ package com.bsquare.app.presentation.ui.screens.Lead
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
@@ -32,6 +34,7 @@ import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.bsquare.app.R
+import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.LeadViewModel
@@ -98,6 +101,15 @@ fun LeadScreen(
 
 @Composable
 fun TodayListSection(leads: List<Leads>,leadViewModel: LeadViewModel, baseViewModel: BaseViewModel) {
+
+    baseViewModel.refreshLoadDataArg.ComposeLaunchEffect(intentionalCode = {
+    if (it){
+        Log.d("testing","called${ leadViewModel.getLeadsData()}")
+
+        leadViewModel.getLeadsData()
+    }
+    }, clearance = { false})
+
     val screenHeightBy40 = LocalConfiguration.current.screenHeightDp * 0.40f
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -150,15 +162,16 @@ fun LeadDataItem(
     val ctx = LocalContext.current
 
     Card(
-        modifier = Modifier.clickable(onClick = onItemClicked),
-        shape = RoundedCornerShape(10.dp), elevation = 3.dp
+        modifier = Modifier.padding(horizontal = 5.dp).height(70.dp)
+            .clickable(onClick = onItemClicked),
+        shape = RoundedCornerShape(5.dp), elevation = 10.dp
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(7.5.dp),
+                .padding(9.dp),
         ) {
             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                 AsyncImage(
@@ -195,13 +208,14 @@ fun LeadDataItem(
             }
             Row(
                 modifier = Modifier
-                    .weight(1f).padding(horizontal = 5.dp),
+                    .weight(1f)
+                    .padding(horizontal = 5.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 Box(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .clip(RoundedCornerShape(25.dp))
+                    modifier = Modifier.size(width = 80.dp, height = 35.dp)
+                        .padding(horizontal = 20.dp, vertical = 5.dp)
+                        .clip(RoundedCornerShape(28.dp))
                         .background(color = Color(0xffFF5E00).copy(alpha = .5f))
                 ) {
                     Text(modifier =Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
@@ -214,7 +228,7 @@ fun LeadDataItem(
 
 
                 IconButton(modifier = Modifier
-                    .size(24.dp)
+                    .size(36.dp)
                     .padding(vertical = 5.dp)
                     .clip(RoundedCornerShape(28.dp))
                     .background(color = Color(0xff1ED261)),

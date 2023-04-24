@@ -8,6 +8,12 @@ data class LeadDetailsData(
     val leadLabel :List<Label>,
     val companyNumber:String,
     val companyEmail: String,
-    val latLong: Latlong
+    val latLong: Latlong,
+
+
+    val activity: List<String>,
+    val task: List<String>,
+    val info :List<String>,
+    val note:List<String>
 
 )

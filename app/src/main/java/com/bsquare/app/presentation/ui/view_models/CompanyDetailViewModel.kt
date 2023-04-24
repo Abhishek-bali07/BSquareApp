@@ -1,8 +1,14 @@
 package com.bsquare.app.presentation.ui.view_models
 
 import android.util.Log
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castValueToRequiredTypes
@@ -13,12 +19,13 @@ import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.lang.reflect.Modifier
 import javax.inject.Inject
 
 
 @HiltViewModel
 class CompanyDetailViewModel @Inject constructor(
-    private val appNavigator:AppNavigator,
+    val appNavigator:AppNavigator,
     private val  useCase: DetailsUseCase
 
 ): ViewModel(){
@@ -33,6 +40,8 @@ class CompanyDetailViewModel @Inject constructor(
     val mSelectedText = mutableStateOf("")
 
     val lSelectedText = mutableStateOf("")
+
+
 
     val writenActivity = mutableStateOf("")
     val writenTask = mutableStateOf("")
@@ -62,13 +71,48 @@ class CompanyDetailViewModel @Inject constructor(
 
     fun addActivity(writenActivity: String, tabId: String) {
         this.writenActivity.value = ""
-        useCase.addDetails(leadIDArg, text = writenActivity, tabId = )
-        addedActivities.add(writenActivity)
+        useCase.addDetails(leadIDArg, text = writenActivity, tabId =  tabId).onEach {
+            when(it.type){
+                EmitType.Loading ->{
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+
+                    }
+                }
+                EmitType.LeadAdded ->{
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                        addedActivities.add(writenActivity)
+                    }
+                }
+                else -> {
+
+                }
+            }
+
+        }.launchIn(viewModelScope)
+
     }
 
-    fun removeActivity(wrtitenItem: String) {
-        try {
-            addedActivities.remove(wrtitenItem)
+    fun removeActivity(wrtitenItem: String, tabId: String) {
+       try {
+            useCase.removeDetails(leadIDArg, text = wrtitenItem, tabId = tabId).onEach {
+                when(it.type){
+                    EmitType.Loading -> {
+                        it.value?.castValueToRequiredTypes<Boolean>()?.let {
+
+
+                        }
+                    }
+
+                    EmitType.LeadRemoved -> {
+                        it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                            addedActivities.remove(wrtitenItem)
+                        }
+                    }
+
+                    else -> {}
+                }
+            }.launchIn(viewModelScope)
+
         } catch (ex: Exception) {
             Log.d("TESTING", "EXP ${ex.message}")
         }
@@ -77,15 +121,49 @@ class CompanyDetailViewModel @Inject constructor(
 
 
 
-    fun addTask(writenTask: String) {
+    fun addTask(writenTask: String, tabId: String) {
         this.writenTask.value = ""
-        addedTask.add(writenTask)
+        useCase.addDetails(leadIDArg, text = writenTask, tabId = tabId).onEach {
+            when(it.type) {
+                EmitType.Loading -> {
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+
+                    }
+                }
+                EmitType.LeadAdded -> {
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                        addedTask.add(writenTask)
+                    }
+                }
+
+                else -> {
+
+                }
+            }
+        }.launchIn(viewModelScope)
+
     }
 
-    fun removeTask(wrtitenItem: String) {
+    fun removeTask(wrtitenItem: String, tabId: String) {
         try {
-            addedTask.remove(wrtitenItem)
-        } catch (ex: Exception) {
+             useCase.removeDetails(leadIDArg, text = wrtitenItem, tabId = tabId).onEach {
+                 when(it.type){
+                     EmitType.Loading -> {
+                         it.value?.castValueToRequiredTypes<Boolean>()?.let {
+
+                         }
+                     }
+                     EmitType.LeadRemoved -> {
+                         it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                             addedTask.remove(wrtitenItem)
+                         }
+                     }
+
+
+                     else -> {}
+                 }
+             }.launchIn(viewModelScope)
+        }  catch (ex: Exception) {
             Log.d("TESTING", "EXP ${ex.message}")
         }
 
@@ -93,14 +171,50 @@ class CompanyDetailViewModel @Inject constructor(
 
 
 
-    fun addInfo(writenInfo: String) {
+    fun addInfo(writenInfo: String, tabId: String) {
         this.writenInfo.value = ""
-        addedInfo.add(writenInfo)
+        useCase.addDetails(leadIDArg, text = writenInfo, tabId =  tabId ).onEach {
+
+            when(it.type) {
+                EmitType.Loading -> {
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+
+                    }
+                }
+                EmitType.LeadAdded -> {
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                        addedInfo.add(writenInfo)
+                    }
+                }
+
+                else -> {
+
+                }
+            }
+
+        }.launchIn(viewModelScope)
+
     }
 
-    fun removeInfo(wrtitenItem: String) {
+    fun removeInfo(wrtitenItem: String, tabId: String) {
         try {
-            addedInfo.remove(wrtitenItem)
+
+            useCase.removeDetails(leadIDArg, text = wrtitenItem, tabId = tabId).onEach {
+                when(it.type){
+                    EmitType.Loading ->{
+
+                    }
+                    EmitType.LeadRemoved ->{
+                        it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                            addedInfo.remove(wrtitenItem)
+                        }
+                    }
+                    else -> {
+
+                    }
+                }
+            }.launchIn(viewModelScope)
+
         } catch (ex: Exception) {
             Log.d("TESTING", "EXP ${ex.message}")
         }
@@ -108,14 +222,47 @@ class CompanyDetailViewModel @Inject constructor(
     }
 
 
-    fun addNote(writenNote: String) {
+    fun addNote(writenNote: String, tabId: String) {
         this.writenNote.value = ""
-        addedNote.add(writenNote)
+        useCase.addDetails(leadIDArg, text = writenNote, tabId = tabId,).onEach {
+
+            when(it.type) {
+                EmitType.Loading -> {
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+
+                    }
+                }
+                EmitType.LeadAdded -> {
+                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                        addedNote.add(writenNote)
+                    }
+                }
+
+                else -> {
+
+                }
+            }
+        }.launchIn(viewModelScope)
+
     }
 
-    fun removeNote(wrtitenItem: String) {
+    fun removeNote(wrtitenItem: String, tabId: String) {
         try {
-            addedNote.remove(wrtitenItem)
+            useCase.removeDetails(leadIDArg, text = wrtitenItem, tabId).onEach {
+                when(it.type){
+                    EmitType.Loading ->{
+
+                    }
+                    EmitType.LeadRemoved -> {
+                        it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                        addedNote.remove(wrtitenItem)
+                        }
+                    }
+
+                    else -> {}
+                }
+            }.launchIn(viewModelScope)
+
         } catch (ex: Exception) {
             Log.d("TESTING", "EXP ${ex.message}")
         }
@@ -145,6 +292,10 @@ class CompanyDetailViewModel @Inject constructor(
                     companyDetails.value = it
                       mSelectedText.value=it.leadLabel.first().labelName
                       lSelectedText.value=it.leadStatus.first().statusName
+                      addedActivities.addAll(it.activity)
+                      addedTask.addAll(it.task)
+                      addedInfo.addAll(it.info)
+                      addedNote.addAll(it.note)
                   }
               }
               else -> {}

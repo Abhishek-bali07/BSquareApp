@@ -11,8 +11,6 @@ enum class EmitType {
     FeaturesItem,
     LeadsItem,
     LeadsDetails,
-    PendingOrders,
-    CompletedOrders,
-    PaymentInfomationData,
-    Message
+    LeadAdded,
+    LeadRemoved
 }

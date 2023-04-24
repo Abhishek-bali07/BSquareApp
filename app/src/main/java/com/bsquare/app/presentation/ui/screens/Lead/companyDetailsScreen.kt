@@ -2,6 +2,8 @@ package com.bsquare.app.presentation.ui.screens.Lead
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -35,6 +37,7 @@ import com.bsquare.app.presentation.ui.custom_composable.AddNote
 import com.bsquare.app.presentation.ui.custom_composable.AddTask
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
+import com.bsquare.core.common.constants.Destination
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -63,21 +66,31 @@ fun CompanyDetailScreen(
                     )
                 )
             }, navigationIcon = {
-                Image(
+               IconButton(
+                   onClick = {
+                       companyDetailViewModel.appNavigator.tryNavigateBack()
+                   }) {
+                   Image(
+                       modifier = Modifier
+                           .size(40.dp)
+                           .padding(horizontal = 8.dp),
+                       painter = R.drawable.backbutton.resourceImage(),
+                       contentDescription = null
+                   )
+               }
 
-                    modifier = androidx.compose.ui.Modifier
-                        .size(40.dp)
-                        .padding(horizontal = 8.dp),
-                    painter = R.drawable.backbutton.resourceImage(),
-                    contentDescription = null
-                )
             })
-            CompanyTypeSection(companyDetailViewModel)
+            CompanyTypeSection(companyDetailViewModel,baseViewModel)
             CompanyDetailSection(companyDetailViewModel)
             TabBarSection(companyDetailViewModel)
 
 
         }
+    }
+
+    BackHandler {
+       Log.d("testing", "called")
+        baseViewModel.appNavigator.tryNavigateBack(route = Destination.LeadScreen(), inclusive = true)
     }
 
     baseViewModel.leadToLeadDetailsArg.ComposeLaunchEffect(intentionalCode = {
@@ -133,18 +146,18 @@ fun ColumnScope.TabBarSection(companyDetailViewModel: CompanyDetailViewModel) {
         ) { page ->
             when (page) {
                 0 -> {
-                   AddActivity(companyDetailViewModel)
+                   AddActivity(companyDetailViewModel,page)
                 }
                 1 -> {
                     // add task
-                    AddTask(companyDetailViewModel)
+                    AddTask(companyDetailViewModel,page)
                 }
                 2 ->{
-                    AddNote(companyDetailViewModel)
+                    AddNote(companyDetailViewModel,page)
                 }
 
                 3 ->{
-                    AddInfo(companyDetailViewModel)
+                    AddInfo(companyDetailViewModel,page)
                 }
             }
 
@@ -357,7 +370,7 @@ fun CompanyDetailSection(
 }
 
 @Composable
-fun CompanyTypeSection(companyDetailViewModel: CompanyDetailViewModel) {
+fun CompanyTypeSection(companyDetailViewModel: CompanyDetailViewModel,baseViewModel: BaseViewModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -366,14 +379,14 @@ fun CompanyTypeSection(companyDetailViewModel: CompanyDetailViewModel) {
             .background(color = Color.LightGray)
             .padding(horizontal = 25.dp, vertical = 10.dp),
     ) {
-        StatusSection(companyDetailViewModel)
+        StatusSection(companyDetailViewModel,baseViewModel)
 
-        LabelSection(companyDetailViewModel)
+        LabelSection(companyDetailViewModel, baseViewModel)
     }
 }
 
 @Composable
-fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel) {
+fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel, baseViewModel: BaseViewModel) {
     Row(
         modifier = Modifier
             .weight(1f),
@@ -423,6 +436,7 @@ fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel) {
             ) {
             companyDetailViewModel.companyDetails.value?.leadStatus?.forEach { text ->
                 DropdownMenuItem(onClick = {
+                    baseViewModel.refreshLoadDataArg.value = true
                     companyDetailViewModel.lSelectedText.value = text.statusName
                     companyDetailViewModel.isExpanded.value = false
                 }) {
@@ -436,7 +450,7 @@ fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel) {
 }
 
 @Composable
-fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel) {
+fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel,baseViewModel: BaseViewModel) {
     Row(
         modifier = Modifier
             .weight(1f),
@@ -488,6 +502,7 @@ fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel) {
             ) {
             companyDetailViewModel.companyDetails.value?.leadLabel?.forEach { text ->
                 DropdownMenuItem(onClick = {
+                    baseViewModel.refreshLoadDataArg.value = true
                     companyDetailViewModel.mSelectedText.value = text.labelName
                     companyDetailViewModel.isMenuExpanded.value = false
                 }) {

@@ -14,4 +14,7 @@ class BaseViewModel @Inject constructor(
 ) : ViewModel(){
     var leadToLeadDetailsArg = mutableStateOf("")
 
+
+    var refreshLoadDataArg = mutableStateOf(false)
+
 }

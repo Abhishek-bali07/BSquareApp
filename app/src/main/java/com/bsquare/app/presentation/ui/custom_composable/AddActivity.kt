@@ -23,7 +23,7 @@ import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddActivity(
-    companyDetailViewModel: CompanyDetailViewModel
+    companyDetailViewModel: CompanyDetailViewModel,tabInt: Int
 ) {
 
     Column(
@@ -45,7 +45,7 @@ fun AddActivity(
                 .clip(RoundedCornerShape(25.dp))
                 .background(color = Color(0xffEF2424)),
                 onClick = {
-                    companyDetailViewModel.addActivity(companyDetailViewModel.writenActivity.value, )
+                    companyDetailViewModel.addActivity(companyDetailViewModel.writenActivity.value, tabId = tabInt.toString())
                 }) {
                 Row(
                     modifier = Modifier.background(color =  Color(0xffEF2424)),
@@ -104,7 +104,7 @@ fun AddActivity(
 
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(text = item)
-                            IconButton(onClick = { companyDetailViewModel.removeActivity(item) }) {
+                            IconButton(onClick = { companyDetailViewModel.removeActivity(item, tabId = tabInt.toString()) }) {
                                 Icon(
                                     painter = R.drawable.mcircle.resourceImage(),
                                     contentDescription = null

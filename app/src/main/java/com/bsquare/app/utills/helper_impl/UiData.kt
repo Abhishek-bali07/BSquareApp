@@ -5,4 +5,6 @@ enum class UiData {
     AppStoreLink,
     LoginContinueBtnEnable,
     LoginApiLoading,
+    AddNewClientBtnEnable,
+    NewClientApiLoading,
 }

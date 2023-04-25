@@ -6,4 +6,6 @@ object AppRoutes {
     const val DASHBOARD = "dashboard"
     const val LEAD = "lead"
     const val COMPANY = "company"
+    const val FILTER = "filter"
+    const val ADDLEAD = "add lead"
 }

@@ -14,18 +14,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +51,19 @@ fun LeadScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        floatingActionButton = {
+            FloatingActionButton(
+                modifier = Modifier.padding(top = 80.dp),
+                    onClick = {
+                              leadViewModel.onAddLeads()
+                    },
+                    backgroundColor = Color.LightGray,
+                ) {
+                    Icon(Icons.Filled.Add,"")
+                }
+
+            },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -81,7 +95,9 @@ fun LeadScreen(
                             contentDescription = null
                         )
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        leadViewModel.onFilterClicked()
+                    }) {
                         Image(
                             modifier = Modifier.size(25.dp),
                             painter = R.drawable.filter.resourceImage(),
@@ -92,7 +108,11 @@ fun LeadScreen(
 
                 })
 
+
+
+
             TodayListSection(leads = leadViewModel.leads,leadViewModel, baseViewModel)
+
 
         }
 
@@ -162,7 +182,9 @@ fun LeadDataItem(
     val ctx = LocalContext.current
 
     Card(
-        modifier = Modifier.padding(horizontal = 5.dp).height(70.dp)
+        modifier = Modifier
+            .padding(horizontal = 5.dp)
+            .height(70.dp)
             .clickable(onClick = onItemClicked),
         shape = RoundedCornerShape(5.dp), elevation = 10.dp
     ) {
@@ -213,7 +235,8 @@ fun LeadDataItem(
                 horizontalArrangement = Arrangement.End
             ) {
                 Box(
-                    modifier = Modifier.size(width = 80.dp, height = 35.dp)
+                    modifier = Modifier
+                        .size(width = 80.dp, height = 35.dp)
                         .padding(horizontal = 20.dp, vertical = 5.dp)
                         .clip(RoundedCornerShape(28.dp))
                         .background(color = Color(0xffFF5E00).copy(alpha = .5f))

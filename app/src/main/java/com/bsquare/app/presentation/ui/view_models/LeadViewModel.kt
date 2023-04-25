@@ -51,4 +51,24 @@ class LeadViewModel @Inject constructor(
     }
 
 
+   fun onFilterClicked(){
+        appNavigator.tryNavigateTo(
+            Destination.FilterScreen(),
+            popUpToRoute = null,
+            inclusive = false,
+            isSingleTop = true
+        )
+    }
+
+
+    fun onAddLeads(){
+        appNavigator.tryNavigateTo(
+            Destination.AddleadScreen(),
+            popUpToRoute = null,
+            inclusive = false,
+            isSingleTop = true
+        )
+    }
+
+
 }

@@ -6,7 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.bsquare.app.navigation.screen_transitions.AppScreenTransitions
+import com.bsquare.app.presentation.ui.screens.Lead.AddLeadScreen
 import com.bsquare.app.presentation.ui.screens.Lead.CompanyDetailScreen
+import com.bsquare.app.presentation.ui.screens.Lead.FilterScreen
 import com.bsquare.app.presentation.ui.screens.Lead.LeadScreen
 import com.bsquare.app.presentation.ui.screens.dashboard.DashboardScreen
 import com.bsquare.app.presentation.ui.screens.intro.SplashScreen
@@ -47,6 +49,14 @@ fun MainNavGraph(
         }
         composable(destination = Destination.CompanyDetailScreen){
             CompanyDetailScreen(baseViewModel = baseViewModel)
+        }
+
+        composable(destination = Destination.FilterScreen){
+            FilterScreen()
+        }
+
+        composable(destination = Destination.AddleadScreen){
+            AddLeadScreen()
         }
 
     }

@@ -7,6 +7,7 @@
     <string name="update">Update App</string>
     <string name="version_update">Version Update</string>
     <string name="later">Later</string>
+    <string name="add_now">Add Now</string>
 
     <string name="welcome_to_bsquare">Welcome to B Square</string>
 </resources>

@@ -29,4 +29,10 @@ sealed class Destination(
  object CompanyDetailScreen: NoArgumentsDestination(AppRoutes.COMPANY)
 
 
+ object FilterScreen: NoArgumentsDestination(AppRoutes.FILTER)
+
+
+ object AddleadScreen: NoArgumentsDestination(AppRoutes.ADDLEAD)
+
+
 }

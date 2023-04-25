@@ -1,6 +1,5 @@
 package com.bsquare.app.presentation.ui.view_models
 
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +12,6 @@ import com.bsquare.app.utills.helper_impl.SavableMutableState
 import com.bsquare.app.utills.helper_impl.UiData
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
-
 import com.bsquare.core.usecases.LoginUseCase
 import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel

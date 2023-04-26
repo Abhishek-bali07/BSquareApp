@@ -12,5 +12,6 @@ enum class EmitType {
     LeadsItem,
     LeadsDetails,
     LeadAdded,
-    LeadRemoved
+    LeadRemoved,
+    AddNewLead
 }

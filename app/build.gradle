@@ -117,6 +117,14 @@ dependencies {
 
 
 
+    implementation "com.google.accompanist:accompanist-permissions:0.28.0"
+
+    implementation group: 'com.google.android.gms', name: 'play-services-location', version: '21.0.1'
+    //googlemap
+    implementation "com.google.maps.android:maps-compose:1.0.0"
+
+    implementation "com.google.android.gms:play-services-maps:18.0.2"
+
 
 
 

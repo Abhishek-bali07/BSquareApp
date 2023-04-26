@@ -8,6 +8,12 @@
     <string name="version_update">Version Update</string>
     <string name="later">Later</string>
     <string name="add_now">Add Now</string>
-
+    <string name="okay">Okay</string>
     <string name="welcome_to_bsquare">Welcome to B Square</string>
+
+
+    <string name="location_rationale_message">We need your current location for contract. Please grant this permission.</string>
+    <string name="all_permission_not_granted">We need your current location for contract. Please grant this permission.</string>
+    <string name="exact_permission_not_granted">Getting your exact location is important for this app.  Please grant us fine location. Thank you</string>
+    <string name="please_enable_your_gps">Please enable your Location Service/GPS for acessing your currnet location.</string>
 </resources>

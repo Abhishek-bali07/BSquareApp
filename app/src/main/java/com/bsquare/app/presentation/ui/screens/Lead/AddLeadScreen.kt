@@ -2,6 +2,8 @@ package com.bsquare.app.presentation.ui.screens.Lead
 
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,16 +28,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bsquare.app.R
+import com.bsquare.app.presentation.states.Dialog
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.custom_composable.AppButton
+import com.bsquare.app.presentation.ui.custom_composable.requestPermissionComposable
 import com.bsquare.app.presentation.ui.view_models.AddLeadViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.*
 
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddLeadScreen(
     addLeadViewModel: AddLeadViewModel = hiltViewModel()
 ){
     val scaffoldState = rememberScaffoldState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    val permissionState = requestPermissionComposable(
+        onPermissionGranted = {
+                                retrieveCurrentLocation(context, addLeadViewModel)
+                            },
+        exactLocationPermissionNotGranted = addLeadViewModel::onAllPermissionNotGranted,
+        showRationale =addLeadViewModel::onShowRationale,
+        deniedPermissionForever = addLeadViewModel::onPermissionDeniedForever,
+        )
+
     Scaffold(scaffoldState = scaffoldState)
     {   paddingValues ->
         Column(
@@ -70,11 +92,293 @@ fun AddLeadScreen(
 
             AppButton(
                 enable =addLeadViewModel.enableBtn.value ,
-                loading =addLeadViewModel.loginLoading.value,
-                action = { /*TODO*/ },
+                loading =addLeadViewModel.addLoading.value,
+                action = addLeadViewModel::newLead,
                 name =R.string.add_now )
         }
 
+    }
+
+
+
+    addLeadViewModel.showRationaleDialog.value?.apply {
+        if (currentState()) {
+            AlertDialog(
+                shape = RoundedCornerShape(19.dp),
+                onDismissRequest = { setState(Dialog.Companion.State.DISABLE) },
+                buttons = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        currentData?.positive?.let {
+                            OutlinedButton(
+                                onClick = {
+                                    onConfirm?.invoke(currentData?.data)
+                                    permissionState.launchMultiplePermissionRequest()
+                                },
+                                shape = RoundedCornerShape(30),
+                                border = BorderStroke(1.dp, color = Color(0xFF26BC50) ),
+                                modifier = Modifier.padding(10.dp)
+                            ) {
+                            Text(
+                                    text = it,
+                                    style = TextStyle(
+
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF26BC50)
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier,
+                title = {
+                    currentData?.title?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                color = Color.Black,
+
+                                ),
+                        )
+                    }
+
+                },
+                text = {
+                    currentData?.message?.let {
+                   Text(
+                            text = it,
+                            style = TextStyle(
+
+                                fontSize = 17.sp,
+                                color = Color.Black,
+                            ),
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    addLeadViewModel.allPermissionNotGranted.value?.apply {
+        if (currentState()) {
+            AlertDialog(
+                shape = RoundedCornerShape(19.dp),
+                onDismissRequest = { setState(Dialog.Companion.State.DISABLE) },
+                buttons = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        currentData?.positive?.let {
+                            OutlinedButton(
+                                onClick = { onConfirm?.invoke(currentData?.data) },
+                                shape = RoundedCornerShape(30),
+                                border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
+                                modifier = Modifier.padding(10.dp)
+                            ) {
+                              Text(
+                                    text = it,
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF26BC50)),
+                                    )
+
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier,
+                title = {
+                    currentData?.title?.let {
+                    Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                color = Color.Black,
+
+                                ),
+                        )
+                    }
+
+                },
+                text = {
+                    currentData?.message?.let {
+                        Text(
+                            text = it,
+                            style =  TextStyle(
+                                fontSize = 17.sp,
+                                color = Color.Black,
+                            ),
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    addLeadViewModel.permissionDeniedForever.value?.apply {
+        if (currentState()) {
+            AlertDialog(
+                shape = RoundedCornerShape(19.dp),
+                onDismissRequest = { },
+                buttons = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        currentData?.positive?.let {
+                            OutlinedButton(
+                                onClick = {
+                                    onConfirm?.invoke(currentData?.data)
+                                },
+                                shape = RoundedCornerShape(30),
+                                border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
+                                modifier = Modifier.padding(10.dp)
+                            ) {
+                              Text(
+                                    text = it,
+                                    style =  TextStyle(
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF26BC50)
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier,
+                title = {
+                    currentData?.title?.let {
+                       Text(
+                            text = it,
+                            style =TextStyle(
+                                fontSize = 20.sp,
+                                color = Color.Black,
+
+                                ),
+                        )
+                    }
+
+                },
+                text = {
+                    currentData?.message?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 17.sp,
+                                color = Color.Black,
+                            ),
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+   addLeadViewModel.openEnableGps.value?.apply {
+        if (currentState()) {
+            AlertDialog(
+                shape = RoundedCornerShape(19.dp),
+                onDismissRequest = {
+                    onDismiss?.invoke(null)
+                },
+                buttons = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        currentData?.negative?.let {
+                            OutlinedButton(
+                                onClick = {
+                                    onDismiss?.invoke(currentData?.data)
+                                },
+                                shape = RoundedCornerShape(30),
+                                border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
+                                modifier = Modifier.padding(10.dp)
+                            ) {
+                              Text(
+                                    text = it,
+                                    style =TextStyle(
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF26BC50)
+                                    ),
+                                )
+                            }
+                        }
+                        currentData?.positive?.let {
+                            OutlinedButton(
+                                onClick = {
+                                    onConfirm?.invoke(currentData?.data)
+                                },
+                                shape = RoundedCornerShape(30),
+                                border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
+                                modifier = Modifier.padding(10.dp)
+                            ) {
+                               Text(
+                                    text = it,
+                                    style = TextStyle(
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF26BC50)
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier,
+                title = {
+                    currentData?.title?.let {
+                    Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 20.sp,
+                                color = Color.Black,
+
+                                ),
+                        )
+                    }
+
+                },
+                text = {
+                    currentData?.message?.let {
+                        Text(
+                            text = it,
+                            style = TextStyle(
+                                fontSize = 17.sp,
+                                color = Color.Black,
+                            ),
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+
+}
+
+@SuppressLint("MissingPermission")
+fun retrieveCurrentLocation(context: Context, addLeadViewModel: AddLeadViewModel) {
+    val fusedLocation = LocationServices.getFusedLocationProviderClient(context)
+    fusedLocation.lastLocation.addOnSuccessListener { currentLocation ->
+        Log.d("CurrentLocation", "$currentLocation")
+        if (currentLocation != null) {
+            addLeadViewModel.onGetCurrentLocation(currentLocation.latitude, currentLocation.longitude)
+            addLeadViewModel.openEnableGps.value?.setState(Dialog.Companion.State.DISABLE)
+
+        }
     }
 }
 
@@ -198,7 +502,9 @@ fun AddClientSection(addLeadViewModel: AddLeadViewModel) {
                   unfocusedBorderColor = Color.LightGray
               )
           )
-          Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+          Row(modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
 
               Text(modifier = Modifier.weight(1f),text = "Address", style = TextStyle(fontWeight = FontWeight.W500))
               Row(modifier = Modifier.weight(1f),
@@ -209,6 +515,33 @@ fun AddClientSection(addLeadViewModel: AddLeadViewModel) {
               }
 
           }
+          Box(modifier = Modifier
+              .padding(10.dp)
+              .size(width = 370.dp, height = 150.dp)){
+              val singapore = LatLng(1.35, 103.87)
+              val cameraPositionState = rememberCameraPositionState {
+                  position = CameraPosition.fromLatLngZoom(singapore, 10f)
+              }
+              GoogleMap(
+                  modifier = Modifier.fillMaxSize(),
+                  cameraPositionState = cameraPositionState,
+                  uiSettings = MapUiSettings(),
+                  properties = MapProperties()
+
+
+              ) {
+
+                  Marker(
+                      position = singapore,
+                      title = "Singapore",
+                      snippet = "Marker in Singapore"
+                  )
+
+              }
+          }
+
+
+
 
           //
           Text(modifier = Modifier.padding(horizontal = 10.dp),text = "Notes", style = TextStyle(fontWeight = FontWeight.W500))
@@ -264,6 +597,7 @@ fun SwitchButton(
                 indication = null,
                 interactionSource = interactionSource
             ) {
+//                permissionState.launchMultiplePermissionRequest()
                 switchOn = !switchOn
             },
         contentAlignment = Alignment.Center

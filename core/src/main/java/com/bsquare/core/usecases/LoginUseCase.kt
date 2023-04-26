@@ -13,7 +13,10 @@ import javax.inject.Inject
 class LoginUseCase @Inject constructor(
     private val repository: LoginRepository
 ) {
-    fun loginData(mobileNumber: String, companyName: String, userPassword: String) = flow<Data> {
+    fun loginData(
+        mobileNumber: String,
+        companyName: String,
+        userPassword: String) = flow<Data> {
         emit(Data(EmitType.Loading, true))
         when (val response = repository.login(mobileNumber, companyName, userPassword)) {
             is Success -> {

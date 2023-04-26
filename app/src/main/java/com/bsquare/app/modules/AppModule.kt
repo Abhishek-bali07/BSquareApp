@@ -8,6 +8,7 @@ import com.bsquare.app.data.repositories.*
 import com.bsquare.app.utills.helper_impl.AppStoreImpl
 import com.bsquare.core.domain.repositories.dashboard.DashboardRepository
 import com.bsquare.core.domain.repositories.intro.SplashRepository
+import com.bsquare.core.domain.repositories.lead.AddLeadRepository
 import com.bsquare.core.domain.repositories.lead.CompanyDetailsRepository
 import com.bsquare.core.domain.repositories.lead.LeadRepository
 import com.bsquare.core.domain.repositories.login.LoginRepository
@@ -58,4 +59,8 @@ interface AppModule {
 
     @Binds
     fun  bindCompanyDetailRepository(repo: DeatilRepositoryImpl) :CompanyDetailsRepository
+
+
+    @Binds
+    fun bindAddLeadRepository(repo:AddLeadRepositoryImpl) : AddLeadRepository
 }

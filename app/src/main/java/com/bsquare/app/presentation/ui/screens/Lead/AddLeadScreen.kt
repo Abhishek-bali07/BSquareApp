@@ -3,6 +3,9 @@ package com.bsquare.app.presentation.ui.screens.Lead
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
@@ -20,6 +23,7 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,38 +31,49 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.bsquare.app.R
+import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.states.Dialog
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.custom_composable.AppButton
 import com.bsquare.app.presentation.ui.custom_composable.requestPermissionComposable
 import com.bsquare.app.presentation.ui.view_models.AddLeadViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdate
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMapOptions
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddLeadScreen(
     addLeadViewModel: AddLeadViewModel = hiltViewModel()
-){
+) {
     val scaffoldState = rememberScaffoldState()
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val cameraPositionState = rememberCameraPositionState()
+    val coroutineScope = rememberCoroutineScope()
     val permissionState = requestPermissionComposable(
         onPermissionGranted = {
-                                retrieveCurrentLocation(context, addLeadViewModel)
-                            },
+            retrieveCurrentLocation(context, addLeadViewModel, cameraPositionState, coroutineScope)
+        },
         exactLocationPermissionNotGranted = addLeadViewModel::onAllPermissionNotGranted,
-        showRationale =addLeadViewModel::onShowRationale,
+        showRationale = addLeadViewModel::onShowRationale,
         deniedPermissionForever = addLeadViewModel::onPermissionDeniedForever,
-        )
+    )
 
     Scaffold(scaffoldState = scaffoldState)
-    {   paddingValues ->
+    { paddingValues ->
         Column(
             modifier = Modifier
                 .verticalScroll(scrollState)
@@ -79,22 +94,26 @@ fun AddLeadScreen(
                     IconButton(onClick = {
 
                     }) {
-                        Image( modifier = Modifier
-                            .size(40.dp)
-                            .padding(horizontal = 8.dp),
-                            painter = R.drawable.backbutton.resourceImage(), contentDescription = null)
+                        Image(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(horizontal = 8.dp),
+                            painter = R.drawable.backbutton.resourceImage(),
+                            contentDescription = null
+                        )
                     }
 
                 })
-            
-            
-            AddClientSection(addLeadViewModel)
+
+
+            AddClientSection(addLeadViewModel, permissionState, cameraPositionState, coroutineScope )
 
             AppButton(
-                enable =addLeadViewModel.enableBtn.value ,
-                loading =addLeadViewModel.addLoading.value,
+                enable = addLeadViewModel.enableBtn.value,
+                loading = addLeadViewModel.addLoading.value,
                 action = addLeadViewModel::newLead,
-                name =R.string.add_now )
+                name = R.string.add_now
+            )
         }
 
     }
@@ -120,10 +139,10 @@ fun AddLeadScreen(
                                     permissionState.launchMultiplePermissionRequest()
                                 },
                                 shape = RoundedCornerShape(30),
-                                border = BorderStroke(1.dp, color = Color(0xFF26BC50) ),
+                                border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
                                 modifier = Modifier.padding(10.dp)
                             ) {
-                            Text(
+                                Text(
                                     text = it,
                                     style = TextStyle(
 
@@ -151,7 +170,7 @@ fun AddLeadScreen(
                 },
                 text = {
                     currentData?.message?.let {
-                   Text(
+                        Text(
                             text = it,
                             style = TextStyle(
 
@@ -184,12 +203,13 @@ fun AddLeadScreen(
                                 border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
                                 modifier = Modifier.padding(10.dp)
                             ) {
-                              Text(
+                                Text(
                                     text = it,
                                     style = TextStyle(
                                         fontSize = 12.sp,
-                                        color = Color(0xFF26BC50)),
-                                    )
+                                        color = Color(0xFF26BC50)
+                                    ),
+                                )
 
                             }
                         }
@@ -198,7 +218,7 @@ fun AddLeadScreen(
                 modifier = Modifier,
                 title = {
                     currentData?.title?.let {
-                    Text(
+                        Text(
                             text = it,
                             style = TextStyle(
                                 fontSize = 20.sp,
@@ -213,7 +233,7 @@ fun AddLeadScreen(
                     currentData?.message?.let {
                         Text(
                             text = it,
-                            style =  TextStyle(
+                            style = TextStyle(
                                 fontSize = 17.sp,
                                 color = Color.Black,
                             ),
@@ -245,9 +265,9 @@ fun AddLeadScreen(
                                 border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
                                 modifier = Modifier.padding(10.dp)
                             ) {
-                              Text(
+                                Text(
                                     text = it,
-                                    style =  TextStyle(
+                                    style = TextStyle(
                                         fontSize = 12.sp,
                                         color = Color(0xFF26BC50)
                                     ),
@@ -259,9 +279,9 @@ fun AddLeadScreen(
                 modifier = Modifier,
                 title = {
                     currentData?.title?.let {
-                       Text(
+                        Text(
                             text = it,
-                            style =TextStyle(
+                            style = TextStyle(
                                 fontSize = 20.sp,
                                 color = Color.Black,
 
@@ -285,7 +305,7 @@ fun AddLeadScreen(
         }
     }
 
-   addLeadViewModel.openEnableGps.value?.apply {
+    addLeadViewModel.openEnableGps.value?.apply {
         if (currentState()) {
             AlertDialog(
                 shape = RoundedCornerShape(19.dp),
@@ -308,9 +328,9 @@ fun AddLeadScreen(
                                 border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
                                 modifier = Modifier.padding(10.dp)
                             ) {
-                              Text(
+                                Text(
                                     text = it,
-                                    style =TextStyle(
+                                    style = TextStyle(
                                         fontSize = 12.sp,
                                         color = Color(0xFF26BC50)
                                     ),
@@ -326,7 +346,7 @@ fun AddLeadScreen(
                                 border = BorderStroke(1.dp, color = Color(0xFF26BC50)),
                                 modifier = Modifier.padding(10.dp)
                             ) {
-                               Text(
+                                Text(
                                     text = it,
                                     style = TextStyle(
                                         fontSize = 12.sp,
@@ -340,7 +360,7 @@ fun AddLeadScreen(
                 modifier = Modifier,
                 title = {
                     currentData?.title?.let {
-                    Text(
+                        Text(
                             text = it,
                             style = TextStyle(
                                 fontSize = 20.sp,
@@ -366,221 +386,337 @@ fun AddLeadScreen(
         }
     }
 
+    Effects(addLeadViewModel)
+
+
+}
+
+@Composable
+fun Effects(addLeadViewModel: AddLeadViewModel) {
+    LaunchedEffect(addLeadViewModel.scaffoldState.drawerState.isOpen) {
+        addLeadViewModel.drawerGuestureState.setValue(addLeadViewModel.scaffoldState.drawerState.isOpen)
+    }
+
+    val context = LocalContext.current
+    val lifeCycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(key1 = lifeCycleOwner) {
+
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+
+                    val mgr = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                    if (mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        addLeadViewModel.openEnableGps.value?.setState(Dialog.Companion.State.DISABLE)
+                    } else {
+                        addLeadViewModel.enableGpsDialog()
+                    }
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    val mgr = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                    if (mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        addLeadViewModel.openEnableGps.value?.setState(Dialog.Companion.State.DISABLE)
+                    } else {
+                        addLeadViewModel.enableGpsDialog()
+                    }
+                }
+                else -> {}
+            }
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    addLeadViewModel.openAppSettings.ComposeLaunchEffect(
+        intentionalCode = {
+            it?.let {
+                val appSettingIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                appSettingIntent.resolveActivity(context.packageManager)?.let {
+                    context.startActivity(appSettingIntent)
+                }
+            }
+        },
+        clearance = { null }
+    )
+
 
 }
 
 @SuppressLint("MissingPermission")
-fun retrieveCurrentLocation(context: Context, addLeadViewModel: AddLeadViewModel) {
+fun retrieveCurrentLocation(
+    context: Context,
+    addLeadViewModel: AddLeadViewModel,
+    cameraPositionState: CameraPositionState,
+    uiScope: CoroutineScope
+) {
     val fusedLocation = LocationServices.getFusedLocationProviderClient(context)
     fusedLocation.lastLocation.addOnSuccessListener { currentLocation ->
         Log.d("CurrentLocation", "$currentLocation")
         if (currentLocation != null) {
-            addLeadViewModel.onGetCurrentLocation(currentLocation.latitude, currentLocation.longitude)
+
+            addLeadViewModel.onGetCurrentLocation(
+                currentLocation.latitude,
+                currentLocation.longitude
+            )
             addLeadViewModel.openEnableGps.value?.setState(Dialog.Companion.State.DISABLE)
 
         }
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun AddClientSection(addLeadViewModel: AddLeadViewModel) {
-  Surface(
-      modifier = Modifier.fillMaxWidth(),
-      color = Color.White ) {
-      Column(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 12.dp, vertical = 5.dp),
-          horizontalAlignment = Alignment.Start,
-          verticalArrangement = Arrangement.Top
-      ) {
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Client Name", style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.clientName.value ,
-              placeholder = { Text(text = "Enter Client Name ") },
-              onValueChange = addLeadViewModel::onChangeName,
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-              )
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Email ID" ,style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
+fun AddClientSection(
+    addLeadViewModel: AddLeadViewModel,
+    permissionState: MultiplePermissionsState,
+    cameraPositionState: CameraPositionState,
+    uiScope: CoroutineScope,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 5.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Client Name", style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.clientName.value,
+                placeholder = { Text(text = "Enter Client Name ") },
+                onValueChange = addLeadViewModel::onChangeName,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Email ID", style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
 
-              value =addLeadViewModel.emailId.value ,
-              placeholder = { Text(text = "Type email address") },
-              onValueChange = addLeadViewModel::onEmailChange,
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Phone Number", style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.phoneNumber.value ,
-              onValueChange = addLeadViewModel::onNumberChange,
-              placeholder = { Text(text = "Enter Phone Number") },
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Alternate Phone Number", style = TextStyle(fontWeight = FontWeight.W500))
+                value = addLeadViewModel.emailId.value,
+                placeholder = { Text(text = "Type email address") },
+                onValueChange = addLeadViewModel::onEmailChange,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Phone Number", style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.phoneNumber.value,
+                onValueChange = addLeadViewModel::onNumberChange,
+                placeholder = { Text(text = "Enter Phone Number") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Alternate Phone Number", style = TextStyle(fontWeight = FontWeight.W500)
+            )
 
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.alternateNumber.value ,
-              onValueChange = addLeadViewModel::onAlternateChange,
-              placeholder = { Text(text = "Enter Alternate Number") },
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.alternateNumber.value,
+                onValueChange = addLeadViewModel::onAlternateChange,
+                placeholder = { Text(text = "Enter Alternate Number") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
 
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Company Name", style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.comName.value ,
-              onValueChange = addLeadViewModel::onCompanyChange,
-              placeholder = { Text(text = "Enter Company Name") },
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Website", style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.websiteName.value ,
-              onValueChange = addLeadViewModel::onWebsiteChange,
-              placeholder = { Text(text = "Enter website url") },
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
-          Text(modifier = Modifier.padding(horizontal = 10.dp),
-              text = "Sale Value", style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.saleValue.value ,
-              onValueChange = addLeadViewModel::onsaleChange,
-              placeholder = { Text(text = "Enter sale value") },
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
-          Row(modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Company Name", style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.comName.value,
+                onValueChange = addLeadViewModel::onCompanyChange,
+                placeholder = { Text(text = "Enter Company Name") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Website", style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.websiteName.value,
+                onValueChange = addLeadViewModel::onWebsiteChange,
+                placeholder = { Text(text = "Enter website url") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Sale Value", style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.saleValue.value,
+                onValueChange = addLeadViewModel::onsaleChange,
+                placeholder = { Text(text = "Enter sale value") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp), horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-              Text(modifier = Modifier.weight(1f),text = "Address", style = TextStyle(fontWeight = FontWeight.W500))
-              Row(modifier = Modifier.weight(1f),
-                  horizontalArrangement = Arrangement.SpaceBetween
-              ) {
-                  Text(text = "Current Location", style = TextStyle(fontWeight = FontWeight.W500))
-                  SwitchButton()
-              }
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Address",
+                    style = TextStyle(fontWeight = FontWeight.W500)
+                )
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "Current Location", style = TextStyle(fontWeight = FontWeight.W500))
+                    SwitchButton(
+                        multiplePermissionsState = permissionState,
+                        addLeadViewModel = addLeadViewModel,
+                        cameraPositionState = cameraPositionState,
+                        uiScope = uiScope
+                    )
+                }
 
-          }
-          Box(modifier = Modifier
-              .padding(10.dp)
-              .size(width = 370.dp, height = 150.dp)){
-              val singapore = LatLng(1.35, 103.87)
-              val cameraPositionState = rememberCameraPositionState {
-                  position = CameraPosition.fromLatLngZoom(singapore, 10f)
-              }
-              GoogleMap(
-                  modifier = Modifier.fillMaxSize(),
-                  cameraPositionState = cameraPositionState,
-                  uiSettings = MapUiSettings(),
-                  properties = MapProperties()
-
-
-              ) {
-
-                  Marker(
-                      position = singapore,
-                      title = "Singapore",
-                      snippet = "Marker in Singapore"
-                  )
-
-              }
-          }
-
+            }
+            Box(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .size(width = 370.dp, height = 150.dp)
+            ) {
 
 
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    uiSettings = MapUiSettings(
+                        zoomControlsEnabled = true,
+                        myLocationButtonEnabled = true,
+                        compassEnabled = true, mapToolbarEnabled = true
+                    ),
+                    properties = MapProperties(),
+                    onMapClick = {
+                        addLeadViewModel.addedLatLng.value = it
+                    }
 
-          //
-          Text(modifier = Modifier.padding(horizontal = 10.dp),text = "Notes", style = TextStyle(fontWeight = FontWeight.W500))
-          OutlinedTextField(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 10.dp, horizontal = 10.dp)
-                  .size(height = 60.dp, width = 300.dp),
-              value =addLeadViewModel.notes.value ,
-              onValueChange = addLeadViewModel::onChangeNotes,
-              placeholder = { Text(text = "Enter Notes") },
-              colors = TextFieldDefaults.outlinedTextFieldColors(
-                  focusedBorderColor =Color.Black,
-                  unfocusedBorderColor = Color.LightGray
-              )
-          )
 
-      }
-    
-  }
+                ) {
+                    addLeadViewModel.addedLatLng.value?.let {
+                        Marker(
+                            position = it,
+                            draggable = true,
+                            title = "pos",
+                            snippet = "Marker in pos"
+                        )
+                    }
+
+
+                }
+            }
+
+
+            //
+            Text(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                text = "Notes",
+                style = TextStyle(fontWeight = FontWeight.W500)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                value = addLeadViewModel.notes.value,
+                onValueChange = addLeadViewModel::onChangeNotes,
+                placeholder = { Text(text = "Enter Notes") },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                )
+            )
+
+        }
+
+    }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SwitchButton(
     width: Dp = 60.dp,
     height: Dp = 30.dp,
-    checkedTrackColor: Color = Color(0xFFFF5E00),
+    checkedTrackColor: Color = Color(0xFF1ED261),
     uncheckedTrackColor: Color = Color(0xFFe0e0e0),
     gapBetweenThumbAndTrackEdge: Dp = 8.dp,
     borderWidth: Dp = 1.dp,
     cornerSize: Int = 50,
     iconInnerPadding: Dp = 4.dp,
-    thumbSize: Dp = 20.dp
+    thumbSize: Dp = 20.dp,
+    multiplePermissionsState: MultiplePermissionsState,
+    addLeadViewModel: AddLeadViewModel,
+    cameraPositionState: CameraPositionState,
+    uiScope: CoroutineScope
 ) {
     val interactionSource = remember {
         MutableInteractionSource()
     }
     var switchOn by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     val alignment by animateAlignmentAsState(if (switchOn) 1f else -1f)
@@ -597,8 +733,25 @@ fun SwitchButton(
                 indication = null,
                 interactionSource = interactionSource
             ) {
-//                permissionState.launchMultiplePermissionRequest()
                 switchOn = !switchOn
+                addLeadViewModel.addedLatLng.value.let {
+                    if(it != null && switchOn){
+                        uiScope.launch {
+                            it.let {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newCameraPosition(
+                                        CameraPosition(
+                                            LatLng(it.latitude, it.longitude), 16f, 0f, 22f,
+                                        ),
+                                    )
+                                )
+                            }
+                        }
+                    }else{
+                        multiplePermissionsState.launchMultiplePermissionRequest()
+                    }
+                }
+
             },
         contentAlignment = Alignment.Center
     ) {
@@ -629,13 +782,7 @@ fun SwitchButton(
             )
         }
     }
-
-    // gap between switch and the text
-    Spacer(modifier = Modifier.height(height = 16.dp))
-
-    //Text(text = if (switchOn) "ON" else "OFF")
 }
-
 
 
 @SuppressLint("UnrememberedMutableState")

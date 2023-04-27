@@ -1,7 +1,12 @@
 package com.bsquare.app.presentation.ui.view_models
 
+import android.util.Patterns
+import androidx.compose.material.DrawerState
+import androidx.compose.material.DrawerValue
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarHostState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,8 +20,11 @@ import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.DialogData
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.usecases.AddLeadUseCase
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,9 +33,11 @@ import javax.inject.Inject
 @HiltViewModel
 class AddLeadViewModel @Inject constructor(
 
-    private  val addLeadUseCase: AddLeadUseCase,
-    savedStateHandle: SavedStateHandle,
-): ViewModel() {
+    private val addLeadUseCase: AddLeadUseCase,
+    private val savedStateHandle: SavedStateHandle,
+) : ViewModel() {
+
+    val addedLatLng = mutableStateOf<LatLng?>(null)
 
     var toastNotify = mutableStateOf("")
 
@@ -39,6 +49,9 @@ class AddLeadViewModel @Inject constructor(
     val websiteName = mutableStateOf("")
     val saleValue = mutableStateOf("")
     val notes = mutableStateOf("")
+
+    val isEmailError = mutableStateOf(false)
+    val isNumberError = mutableStateOf(false)
     val showRationaleDialog = mutableStateOf<Dialog?>(null)
 
     val allPermissionNotGranted = mutableStateOf<Dialog?>(null)
@@ -51,38 +64,68 @@ class AddLeadViewModel @Inject constructor(
 
 
 
-    val getMarkers = mutableListOf<Marker>()
+    init {
+        validateInputs()
+    }
+
 
 
     fun onChangeName(n: String) {
         clientName.value = n
     }
 
-    fun onEmailChange(e:String){
+    fun onEmailChange(e: String) {
         emailId.value = e
+        savedStateHandle[UiData.e.toString()] = e
+        isEmailError.value = derivedStateOf {
+            if (e.isEmpty()) return@derivedStateOf false
+            if (e.matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+\$"))) return@derivedStateOf false
+            true
+        }.value
     }
 
-    fun onNumberChange(m:String){
+    fun onNumberChange(m: String) {
         phoneNumber.value = m
+        savedStateHandle[UiData.m.toString()] = m
+        isNumberError.value = derivedStateOf {
+           if(m.isEmpty()) return@derivedStateOf false
+            if (m.matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+\$"))) return@derivedStateOf false
+            true
+        }.value
+
     }
 
-    fun onAlternateChange(altnum: String){
+    fun onAlternateChange(altnum: String) {
         alternateNumber.value = altnum
     }
-    fun onCompanyChange(cn : String){
+
+    fun onCompanyChange(cn: String) {
         comName.value = cn
     }
-    fun onWebsiteChange(wc:String){
+
+    fun onWebsiteChange(wc: String) {
         websiteName.value = wc
     }
-    fun onsaleChange(sv:String){
+
+    fun onsaleChange(sv: String) {
         saleValue.value = sv
     }
 
-    fun onChangeNotes(nc:String){
+    fun onChangeNotes(nc: String) {
         notes.value = nc
     }
 
+
+    val drawerGuestureState = SavableMutableState(
+        key = UiData.DrawerGuestureState,
+        savedStateHandle = savedStateHandle,
+        initialData = false
+    )
+
+    val scaffoldState = ScaffoldState(
+        drawerState = DrawerState(initialValue = DrawerValue.Closed),
+        snackbarHostState = SnackbarHostState()
+    )
 
 
     val enableBtn = SavableMutableState(
@@ -97,62 +140,67 @@ class AddLeadViewModel @Inject constructor(
         initialData = false
     )
 
+    fun submitFcmToken(token: String) {
+        viewModelScope.launch {
+
+        }
+    }
 
 
-
-    fun newLead(){
-        addLeadUseCase.AddLead(
-            clientName = clientName.value,
-            emailId = emailId.value,
-            phoneNumber = phoneNumber.value,
-            alternateNumber = alternateNumber.value,
-            companyName = clientName.value,
-            website = websiteName.value,
-            saleValue = saleValue.value,
-            notes = notes.value
-        ).onEach{
-            when(it.type){
-                EmitType.AddNewLead ->{
-                    it.value?.castValueToRequiredTypes<Boolean>()?.let {
-                      addLoading.setValue(it)
-                    }
-                }
-
-                EmitType.Navigate ->{
-                    it.value?.apply {
-                        castValueToRequiredTypes<Destination.NoArgumentsDestination>()?.let {
-                            destination ->
+    fun newLead() {
+        addedLatLng.value?.let {
+            addLeadUseCase.AddLead(
+                clientName = clientName.value,
+                emailId = emailId.value,
+                phoneNumber = phoneNumber.value,
+                alternateNumber = alternateNumber.value,
+                companyName = clientName.value,
+                website = websiteName.value,
+                saleValue = saleValue.value,
+                notes = notes.value, lat =it.latitude, lng = it.longitude
+            ).onEach {
+                when (it.type) {
+                    EmitType.AddNewLead -> {
+                        it.value?.castValueToRequiredTypes<Boolean>()?.let {
+                            addLoading.setValue(it)
                         }
                     }
-                }
 
-                EmitType.NetworkError -> {
-                    it.value?.apply {
-                        castValueToRequiredTypes<String>()?.let {
-                            toastNotify.value = it
+                    EmitType.Navigate -> {
+                        it.value?.apply {
+                            castValueToRequiredTypes<Destination.NoArgumentsDestination>()?.let { destination ->
+                            }
                         }
                     }
-                }
-                EmitType.BackendError -> {
-                    it.value?.apply {
-                        castValueToRequiredTypes<String>()?.let {
-                            toastNotify.value = it
+
+                    EmitType.NetworkError -> {
+                        it.value?.apply {
+                            castValueToRequiredTypes<String>()?.let {
+                                toastNotify.value = it
+                            }
                         }
                     }
-                }
+                    EmitType.BackendError -> {
+                        it.value?.apply {
+                            castValueToRequiredTypes<String>()?.let {
+                                toastNotify.value = it
+                            }
+                        }
+                    }
 
-                else -> {}
-            }
+                    else -> {}
+                }
+            }.launchIn(viewModelScope)
         }
     }
 
 
     fun onGetCurrentLocation(latitude: Double, longitude: Double) {
         viewModelScope.launch {
-          //  addLeadUseCases.currentLocation(latitude, longitude);
+            addedLatLng.value = LatLng(latitude, longitude)
+            addLeadUseCase.currentLocation(latitude, longitude)
         }
     }
-
 
 
     fun onShowRationale() {
@@ -201,7 +249,36 @@ class AddLeadViewModel @Inject constructor(
         }
     }
 
+    fun enableGpsDialog() {
+        openEnableGps.value = Dialog(
+            data = DialogData(
+                title = R.string.app_name.string(),
+                message = R.string.please_enable_your_gps.string(),
+                positive = R.string.okay.string(),
+                negative = R.string.no.toString()
+            )
+        )
+        openEnableGps.value?.onConfirm = {
+            openAppSettings.value = System.currentTimeMillis()
+            openEnableGps.value?.setState(Dialog.Companion.State.DISABLE)
+        }
+        openEnableGps.value?.onDismiss = {
+            openEnableGps.value?.setState(Dialog.Companion.State.DISABLE)
+        }
+    }
 
-
-
+    private fun validateInputs() {
+        viewModelScope.launch {
+            while(true) {
+                delay(200L)
+                enableBtn.setValue(
+                    when {
+                    clientName.value == null -> false
+                    emailId.value.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(emailId.value).matches() -> false
+                    phoneNumber.value.isEmpty() || !Patterns.PHONE.matcher(phoneNumber.value).matches() -> false
+                    else -> true
+                })
+            }
+        }
+    }
 }

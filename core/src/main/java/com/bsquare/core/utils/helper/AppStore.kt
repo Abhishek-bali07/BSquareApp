@@ -12,4 +12,9 @@ interface AppStore {
     suspend fun logout()
 
     suspend fun isLoggedIn(): Boolean
+
+
+    suspend fun storeFCMToken(token: String)
+    suspend fun lastFCMToken(): String
+    suspend fun removeLastFCMToken(): Boolean
 }

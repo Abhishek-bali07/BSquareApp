@@ -57,4 +57,22 @@ class AppStoreImpl @Inject constructor(
         return false
     }
 
+    override suspend fun storeFCMToken(token: String) {
+        prefs.edit {
+            it[stringPreferencesKey(PrefConstants.FCM_TOKEN)] = token
+        }
+    }
+
+    override suspend fun lastFCMToken(): String {
+        return prefs.data.map {
+            it[stringPreferencesKey(PrefConstants.FCM_TOKEN)]
+        }.first() ?: ""
+    }
+
+    override suspend fun removeLastFCMToken(): Boolean {
+        return prefs.edit {
+            it.remove(stringPreferencesKey(PrefConstants.FCM_TOKEN))
+        }.contains(stringPreferencesKey(PrefConstants.FCM_TOKEN))
+    }
+
 }

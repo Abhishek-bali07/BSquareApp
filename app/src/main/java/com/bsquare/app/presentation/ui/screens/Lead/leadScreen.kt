@@ -5,19 +5,27 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.*
+import androidx.compose.animation.EnterExitState.*
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,26 +52,39 @@ import com.bsquare.core.entities.LeadData
 import com.bsquare.core.entities.Leads
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun LeadScreen(
     leadViewModel: LeadViewModel = hiltViewModel(),
     baseViewModel: BaseViewModel
 ) {
     val scaffoldState = rememberScaffoldState()
+    val listState = rememberLazyListState()
+    val fabVisibility by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0
+        }
+    }
+
+
+
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FloatingActionButton(
-                modifier = Modifier.padding(top = 80.dp),
-                    onClick = {
-                              leadViewModel.onAddLeads()
-                    },
-                    backgroundColor = Color.LightGray,
-                ) {
-                    Icon(Icons.Filled.Add,"")
+            AnimatedVisibility(visible = fabVisibility) {
+                if (fabVisibility) {
+                    FloatingActionButton(
+                        modifier = Modifier.padding(top = 80.dp),
+                        onClick = {
+                            leadViewModel.onAddLeads()
+                        },
+                        backgroundColor = Color.LightGray,
+                    ) {
+                        Icon(Icons.Filled.Add, "")
+                    }
                 }
-
-            },
+            }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -75,7 +96,7 @@ fun LeadScreen(
                 backgroundColor = Color.Red, elevation = 2.dp, title = {
                     Text(
                         "Leads", style = TextStyle(
-                            color = Color.White, textAlign = TextAlign.Center,fontSize = 20.sp
+                            color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp
                         )
                     )
                 }, navigationIcon = {
@@ -111,7 +132,7 @@ fun LeadScreen(
 
 
 
-            TodayListSection(leads = leadViewModel.leads,leadViewModel, baseViewModel)
+            TodayListSection(leads = leadViewModel.leads, leadViewModel, baseViewModel, listState)
 
 
         }
@@ -120,19 +141,27 @@ fun LeadScreen(
 }
 
 @Composable
-fun TodayListSection(leads: List<Leads>,leadViewModel: LeadViewModel, baseViewModel: BaseViewModel) {
+fun TodayListSection(
+    leads: List<Leads>,
+    leadViewModel: LeadViewModel,
+    baseViewModel: BaseViewModel,
+    listState: LazyListState
+) {
 
     baseViewModel.refreshLoadDataArg.ComposeLaunchEffect(intentionalCode = {
-    if (it){
-        Log.d("testing","called${ leadViewModel.getLeadsData()}")
+        if (it) {
+            Log.d("testing", "called${leadViewModel.getLeadsData()}")
 
-        leadViewModel.getLeadsData()
-    }
-    }, clearance = { false})
+            leadViewModel.getLeadsData()
+        }
+    }, clearance = { false })
+
 
     val screenHeightBy40 = LocalConfiguration.current.screenHeightDp * 0.40f
+
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
     ) {
         items(leads) { item ->
             Column(
@@ -152,7 +181,14 @@ fun TodayListSection(leads: List<Leads>,leadViewModel: LeadViewModel, baseViewMo
                     Column(
                         modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
                     ) {
-                        Text(modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),text = item.date, style = TextStyle.Default.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold))
+                        Text(
+                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+                            text = item.date,
+                            style = TextStyle.Default.copy(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
                         LazyColumn(modifier = Modifier.height(screenHeightBy40.dp)) {
                             items(item.leadData) {
                                 LeadDataItem(leadData = it) {
@@ -170,14 +206,42 @@ fun TodayListSection(leads: List<Leads>,leadViewModel: LeadViewModel, baseViewMo
 
         }
     }
+    /*AddPaymentFab(
+        modifier = Modifier
+            .padding(bottom = 40.dp),
+        isVisibleBecauseOfScrolling = fabVisibility
+    )*/
 
 
 }
 
 @Composable
+fun AddPaymentFab(modifier: Modifier, isVisibleBecauseOfScrolling: Boolean) {
+    val density = LocalDensity.current
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = isVisibleBecauseOfScrolling,
+        enter = slideInVertically {
+            with(density) { 40.dp.roundToPx() }
+        } + fadeIn(),
+        exit = fadeOut(
+            animationSpec = keyframes {
+                this.durationMillis = 120
+            }
+        )
+    ) {
+        ExtendedFloatingActionButton(
+            text = { Text(text = "Add Payment") },
+            onClick = { },
+            icon = { Icon(Icons.Filled.Add, "Add Payment") }
+        )
+    }
+}
+
+@Composable
 fun LeadDataItem(
     leadData: LeadData,
-    onItemClicked: ()->Unit
+    onItemClicked: () -> Unit
 ) {
     val ctx = LocalContext.current
 
@@ -220,12 +284,13 @@ fun LeadDataItem(
                         ), modifier = Modifier.padding(horizontal = 10.dp)
                     )
                 }
-                
+
                 if (leadData.isNew)
                     Text(
                         modifier = Modifier.padding(vertical = 5.dp),
                         text = "New",
-                        style = TextStyle(color = Color(0xff1AB13E),fontSize = 12.sp,))
+                        style = TextStyle(color = Color(0xff1AB13E), fontSize = 12.sp)
+                    )
 
             }
             Row(
@@ -241,10 +306,13 @@ fun LeadDataItem(
                         .clip(RoundedCornerShape(28.dp))
                         .background(color = Color(0xffFF5E00).copy(alpha = .5f))
                 ) {
-                    Text(modifier =Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
+                    Text(
+                        modifier = Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
                         text = leadData.type,
                         style = TextStyle(
-                            color = Color(0xffFF5E00), fontSize = 13.sp, fontWeight = FontWeight.Bold
+                            color = Color(0xffFF5E00),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
                         ),
                     )
                 }
@@ -277,8 +345,8 @@ fun LeadDataItem(
             }
 
         }
-    }  
-    
+    }
+
 }
 
 

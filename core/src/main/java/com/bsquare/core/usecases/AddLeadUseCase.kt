@@ -35,7 +35,11 @@ class AddLeadUseCase @Inject constructor(
         phoneNumber:String,
         alternateNumber:String,
         companyName:String,
-        website:String,saleValue:String,notes:String,lat: Double,lng: Double
+        website:String,
+        saleValue:String,
+        notes:String,
+        lat: Double,
+        lng: Double
     ) = flow<Data>{
         emit(Data(EmitType.Loading, true))
         when(val response = repository.addNewLead(
@@ -51,7 +55,6 @@ class AddLeadUseCase @Inject constructor(
                 emit(Data(EmitType.Loading,false))
                 response.data?.apply {
                     when(status){
-
                         true ->{
                             emit(Data(type = EmitType.Inform, message))
                             emit(Data(type = EmitType.Navigate, Destination.LeadScreen))

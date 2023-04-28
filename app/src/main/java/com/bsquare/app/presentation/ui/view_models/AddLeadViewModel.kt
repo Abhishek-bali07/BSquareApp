@@ -171,16 +171,18 @@ class AddLeadViewModel @Inject constructor(
                 notes = notes.value, lat =it.latitude, lng = it.longitude
             ).onEach {
                 when (it.type) {
-                    EmitType.AddNewLead -> {
-                        it.value?.castValueToRequiredTypes<Boolean>()?.let {
-                            addLoading.setValue(it)
+                    EmitType.Loading -> {
+                        it.value?.apply {
+                            castValueToRequiredTypes<Boolean>()?.let {
+                                addLoading.setValue(it)
+                            }
+                            }
                         }
-                    }
 
                     EmitType.Navigate -> {
                         it.value?.apply {
                             castValueToRequiredTypes<Destination.NoArgumentsDestination>()?.let { destination ->
-                                appNavigator.navigateTo(destination())
+                                appNavigator.tryNavigateBack(destination(),inclusive = true)
                             }
                         }
                     }

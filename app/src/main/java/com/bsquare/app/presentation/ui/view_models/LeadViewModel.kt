@@ -1,5 +1,6 @@
 package com.bsquare.app.presentation.ui.view_models
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.SavedStateHandle
@@ -23,6 +24,14 @@ class LeadViewModel @Inject constructor(
     private val appNavigator: AppNavigator,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+
+
+
+
+
+
+
     private val featureId = savedStateHandle.get<String>(Destination.LeadScreen.featureId_KEY)
     val leads = mutableStateListOf<Leads>()
 

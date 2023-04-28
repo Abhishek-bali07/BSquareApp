@@ -10,6 +10,8 @@ enum class UiData {
     DrawerGuestureState,
     e,
     m,
+    wc,
+
 
 
 }

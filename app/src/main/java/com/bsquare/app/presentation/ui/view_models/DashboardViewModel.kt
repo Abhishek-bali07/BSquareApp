@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castListToRequiredTypes
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.Feature
 import com.bsquare.core.entities.ShortDetails
@@ -26,7 +27,14 @@ class DashboardViewModel @Inject constructor(
     init {
         getFeatureData()
     }
-
+    fun onBoxClicked(feature: Feature) {
+        appNavigator.tryNavigateTo(
+            Destination.LeadScreen(featureId = feature.feature_Id),
+            popUpToRoute =null,
+            inclusive = false,
+            isSingleTop = true
+        )
+    }
 
      fun getFeatureData() {
         useCase.FeatureData(selectedDate = date).onEach {

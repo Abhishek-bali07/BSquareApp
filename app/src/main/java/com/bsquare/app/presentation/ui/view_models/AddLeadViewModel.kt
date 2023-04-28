@@ -20,8 +20,8 @@ import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.DialogData
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.usecases.AddLeadUseCase
+import com.bsquare.core.utils.helper.AppNavigator
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddLeadViewModel @Inject constructor(
-
+    private val appNavigator: AppNavigator,
     private val addLeadUseCase: AddLeadUseCase,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -52,6 +52,8 @@ class AddLeadViewModel @Inject constructor(
 
     val isEmailError = mutableStateOf(false)
     val isNumberError = mutableStateOf(false)
+    val isWebsiteError = mutableStateOf(false)
+
     val showRationaleDialog = mutableStateOf<Dialog?>(null)
 
     val allPermissionNotGranted = mutableStateOf<Dialog?>(null)
@@ -105,6 +107,15 @@ class AddLeadViewModel @Inject constructor(
 
     fun onWebsiteChange(wc: String) {
         websiteName.value = wc
+        savedStateHandle[UiData.wc.toString()] = UiData.wc
+        isWebsiteError.value = derivedStateOf {
+            if(wc.isEmpty()) return@derivedStateOf false
+            if (wc.matches(Regex(" “((http|https)://)(www.)?” \n" +
+                        "+ “[a-zA-Z0-9@:%._\\\\+~#?&//=]{2,256}\\\\.[a-z]” \n" +
+                        "+ “{2,6}\\\\b([-a-zA-Z0-9@:%._\\\\+~#?&//=]*)”"))) return@derivedStateOf false
+            true
+        }.value
+
     }
 
     fun onsaleChange(sv: String) {
@@ -169,6 +180,7 @@ class AddLeadViewModel @Inject constructor(
                     EmitType.Navigate -> {
                         it.value?.apply {
                             castValueToRequiredTypes<Destination.NoArgumentsDestination>()?.let { destination ->
+                                appNavigator.navigateTo(destination())
                             }
                         }
                     }
@@ -273,9 +285,16 @@ class AddLeadViewModel @Inject constructor(
                 delay(200L)
                 enableBtn.setValue(
                     when {
-                    clientName.value == null -> false
-                    emailId.value.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(emailId.value).matches() -> false
-                    phoneNumber.value.isEmpty() || !Patterns.PHONE.matcher(phoneNumber.value).matches() -> false
+                    clientName.value.isEmpty() ->{ false }
+                    emailId.value.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(emailId.value).matches() -> {false}
+                    phoneNumber.value.isEmpty() || !Patterns.PHONE.matcher(phoneNumber.value).matches() -> {false}
+                    websiteName.value.isEmpty() || !Patterns.WEB_URL.matcher(websiteName.value).matches() -> {false}
+                    alternateNumber.value.isEmpty() ->{false}
+                    comName.value.isEmpty() ->{false}
+                    saleValue.value.isEmpty() ->{false}
+                    notes.value.isEmpty() ->{false}
+
+
                     else -> true
                 })
             }

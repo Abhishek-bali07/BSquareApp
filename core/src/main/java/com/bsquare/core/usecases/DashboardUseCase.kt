@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class DashboardUseCase @Inject constructor(
-    private val prefs: AppStore, private val repository: DashboardRepository
+    private val prefs: AppStore,
+    private val repository: DashboardRepository
 ) {
     fun FeatureData(selectedDate : String) = flow<Data> {
         emit(Data(EmitType.Loading, value = true))

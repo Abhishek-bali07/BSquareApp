@@ -23,8 +23,13 @@ sealed class Destination(
 
  object DashboardScreen : NoArgumentsDestination(AppRoutes.DASHBOARD)
 
+ object LeadScreen : Destination(AppRoutes.LEAD, "feature_Id") {
+     const val  featureId_KEY = "feature_Id"
+  operator fun invoke(featureId: String): String = route.appendParams(
+   featureId_KEY to featureId
+  )
 
- object LeadScreen : NoArgumentsDestination(AppRoutes.LEAD)
+ }
 
  object CompanyDetailScreen: NoArgumentsDestination(AppRoutes.COMPANY)
 
@@ -35,4 +40,17 @@ sealed class Destination(
  object AddleadScreen: NoArgumentsDestination(AppRoutes.ADDLEAD)
 
 
+}
+
+
+private fun String.appendParams(vararg params: Pair<String, Any?>): String {
+ val builder = StringBuilder(this)
+
+ params.forEach {
+  it.second?.toString()?.let { arg ->
+   builder.append("/$arg")
+  }
+ }
+
+ return builder.toString()
 }

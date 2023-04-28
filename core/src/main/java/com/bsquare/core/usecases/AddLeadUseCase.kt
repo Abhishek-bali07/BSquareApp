@@ -1,6 +1,7 @@
 package com.bsquare.core.usecases
 
 import com.bsquare.core.common.constants.Data
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.Resource
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.domain.repositories.lead.AddLeadRepository
@@ -22,19 +23,7 @@ class AddLeadUseCase @Inject constructor(
 
 
 
-/*
-    suspend fun submitFCMToken(networkStatus: Boolean, fcmToken: String) {
-        if (networkStatus) {
-            if (prefs.lastFCMToken().isNotEmpty()) {
-                repository.submitFCMToken(prefs.lastFCMToken(), prefs.userId())
-                prefs.removeLastFCMToken()
-            } else {
-                repository.submitFCMToken(fcmToken, prefs.userId())
-            }
-        } else {
-            prefs.storeFCMToken(fcmToken)
-        }
-    }*/
+
 
 
 
@@ -65,6 +54,7 @@ class AddLeadUseCase @Inject constructor(
 
                         true ->{
                             emit(Data(type = EmitType.Inform, message))
+                            emit(Data(type = EmitType.Navigate, Destination.LeadScreen))
                         }
 
                         else -> {

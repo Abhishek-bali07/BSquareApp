@@ -19,7 +19,8 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
                 message = "Success",
                 feature = MutableList(4) {idx->
                     Feature(
-                        type = "Meetings",
+                        feature_Id = "ID_${idx+1}",
+                        type = "Leads",
                         quantity = 20,
                         bgColor = "#1AB1B0",
                         identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",

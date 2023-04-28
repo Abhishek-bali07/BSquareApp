@@ -2,11 +2,13 @@ package com.bsquare.app.presentation.ui.view_models
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castListToRequiredTypes
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
+import com.bsquare.core.entities.Feature
 import com.bsquare.core.entities.Leads
 import com.bsquare.core.usecases.LeadUseCase
 import com.bsquare.core.utils.helper.AppNavigator
@@ -19,7 +21,9 @@ import javax.inject.Inject
 class LeadViewModel @Inject constructor(
     private val useCase: LeadUseCase,
     private val appNavigator: AppNavigator,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+    private val featureId = savedStateHandle.get<String>(Destination.LeadScreen.featureId_KEY)
     val leads = mutableStateListOf<Leads>()
 
 
@@ -42,12 +46,15 @@ class LeadViewModel @Inject constructor(
 
 
     fun onCardClicked() {
-        appNavigator.tryNavigateTo(
-            Destination.CompanyDetailScreen(),
-            popUpToRoute = Destination.LeadScreen(),
-            inclusive = false,
-            isSingleTop = true
-        )
+        featureId?.let {
+            appNavigator.tryNavigateTo(
+                Destination.CompanyDetailScreen(),
+                popUpToRoute = Destination.LeadScreen(featureId = featureId),
+                inclusive = false,
+                isSingleTop = true
+            )
+        }
+
     }
 
 

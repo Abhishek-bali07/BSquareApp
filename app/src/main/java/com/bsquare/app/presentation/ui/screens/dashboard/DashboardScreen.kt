@@ -158,7 +158,7 @@ fun FeatureSection(features: List<Feature>, dashboardViewModel: DashboardViewMod
 
                 ) {
                     items(features.size) {
-                        FeatureItem(feature = features[it])
+                        FeatureItem(feature = features[it],dashboardViewModel)
                     }
 
                 }
@@ -183,7 +183,7 @@ fun FeatureSection(features: List<Feature>, dashboardViewModel: DashboardViewMod
 
 @Composable
 fun FeatureItem(
-    feature: Feature
+    feature: Feature,dashboardViewModel: DashboardViewModel
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -238,7 +238,7 @@ fun FeatureItem(
                     .background(color = Color.White)
                     .align(Alignment.BottomEnd),
                 onClick = {
-
+                   dashboardViewModel.onBoxClicked(feature)
                 }
             ) {
                 Icon(

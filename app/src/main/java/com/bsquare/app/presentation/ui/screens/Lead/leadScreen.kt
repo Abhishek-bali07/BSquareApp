@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.EnterExitState.*
 import androidx.compose.animation.core.keyframes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,10 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +48,9 @@ import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.LeadViewModel
 import com.bsquare.core.entities.LeadData
 import com.bsquare.core.entities.Leads
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -75,10 +76,12 @@ fun LeadScreen(
                 if (fabVisibility) {
                     FloatingActionButton(
                         modifier = Modifier.padding(top = 80.dp),
+
                         onClick = {
                             leadViewModel.onAddLeads()
                         },
-                        backgroundColor = Color.LightGray,
+                        backgroundColor = Color.White,
+                        contentColor = Color.Red
                     ) {
                         Icon(Icons.Filled.Add, "")
                     }
@@ -92,11 +95,10 @@ fun LeadScreen(
                 .fillMaxSize()
         ) {
             TopAppBar(
-
                 backgroundColor = Color.Red, elevation = 2.dp, title = {
                     Text(
-                        "Leads", style = TextStyle(
-                            color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp
+                        "Leads", modifier = Modifier.fillMaxWidth(), style = TextStyle(
+                            color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp,
                         )
                     )
                 }, navigationIcon = {
@@ -109,7 +111,8 @@ fun LeadScreen(
                         contentDescription = null
                     )
                 }, actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(
+                        onClick = { /*TODO*/ }) {
                         Image(
                             modifier = Modifier.size(25.dp),
                             painter = R.drawable.search.resourceImage(),
@@ -130,8 +133,7 @@ fun LeadScreen(
                 })
 
 
-
-
+            SurfaceDemo()
             TodayListSection(leads = leadViewModel.leads, leadViewModel, baseViewModel, listState)
 
 
@@ -139,6 +141,25 @@ fun LeadScreen(
 
     }
 }
+
+
+
+
+
+
+@Composable
+fun SurfaceDemo() {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.LightGray,
+        contentColor = Color(0xffFF0303),
+        elevation = 8.dp,
+
+    ) {
+        Text("*SwipeDown for Refresh Page", style = TextStyle(fontSize = 12.sp), modifier = Modifier.padding(horizontal = 10.dp), textAlign = TextAlign.Center)
+    }
+}
+
 
 @Composable
 fun TodayListSection(
@@ -151,7 +172,6 @@ fun TodayListSection(
     baseViewModel.refreshLoadDataArg.ComposeLaunchEffect(intentionalCode = {
         if (it) {
             Log.d("testing", "called${leadViewModel.getLeadsData()}")
-
             leadViewModel.getLeadsData()
         }
     }, clearance = { false })
@@ -159,84 +179,76 @@ fun TodayListSection(
 
     val screenHeightBy40 = LocalConfiguration.current.screenHeightDp * 0.40f
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
+    val isLoading by leadViewModel.isRefreshing.collectAsState()
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
+
+
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = leadViewModel::getLeadsData,
+        indicator = { state, refreshTrigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger,
+                backgroundColor = Color.White,
+                contentColor = Color.Red
+            )
+        }
     ) {
-        items(leads) { item ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                //date section
-                Card(
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = listState,
+        ) {
+            items(leads) { item ->
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(12.dp),
-                    shape = RectangleShape
+                        .wrapContentHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
+                    //date section
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(12.dp),
+                        shape = RectangleShape
                     ) {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
-                            text = item.date,
-                            style = TextStyle.Default.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+                                text = item.date,
+                                style = TextStyle.Default.copy(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             )
-                        )
-                        LazyColumn(modifier = Modifier.height(screenHeightBy40.dp)) {
-                            items(item.leadData) {
-                                LeadDataItem(leadData = it) {
-                                    baseViewModel.leadToLeadDetailsArg.value = it.id
-                                    leadViewModel.onCardClicked()
+                            LazyColumn(modifier = Modifier.height(screenHeightBy40.dp), userScrollEnabled = false) {
+                                items(item.leadData) {
+                                    LeadDataItem(leadData = it) {
+                                        baseViewModel.leadToLeadDetailsArg.value = it.id
+                                        leadViewModel.onCardClicked()
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
+
+
                             }
-
-
                         }
                     }
                 }
-            }
 
+            }
         }
+
     }
-    /*AddPaymentFab(
-        modifier = Modifier
-            .padding(bottom = 40.dp),
-        isVisibleBecauseOfScrolling = fabVisibility
-    )*/
 
 
 }
 
-@Composable
-fun AddPaymentFab(modifier: Modifier, isVisibleBecauseOfScrolling: Boolean) {
-    val density = LocalDensity.current
-    AnimatedVisibility(
-        modifier = modifier,
-        visible = isVisibleBecauseOfScrolling,
-        enter = slideInVertically {
-            with(density) { 40.dp.roundToPx() }
-        } + fadeIn(),
-        exit = fadeOut(
-            animationSpec = keyframes {
-                this.durationMillis = 120
-            }
-        )
-    ) {
-        ExtendedFloatingActionButton(
-            text = { Text(text = "Add Payment") },
-            onClick = { },
-            icon = { Icon(Icons.Filled.Add, "Add Payment") }
-        )
-    }
-}
 
 @Composable
 fun LeadDataItem(
@@ -248,7 +260,7 @@ fun LeadDataItem(
     Card(
         modifier = Modifier
             .padding(horizontal = 5.dp)
-            .height(70.dp)
+            .height(75.dp)
             .clickable(onClick = onItemClicked),
         shape = RoundedCornerShape(5.dp), elevation = 10.dp
     ) {
@@ -257,7 +269,7 @@ fun LeadDataItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(9.dp),
+                .padding(12.dp),
         ) {
             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                 AsyncImage(
@@ -299,20 +311,21 @@ fun LeadDataItem(
                     .padding(horizontal = 5.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                Box(
+                Surface(
                     modifier = Modifier
-                        .size(width = 80.dp, height = 35.dp)
+                        .size(width = 80.dp, height = 30.dp)
                         .padding(horizontal = 20.dp, vertical = 5.dp)
-                        .clip(RoundedCornerShape(28.dp))
-                        .background(color = Color(0xffFF5E00).copy(alpha = .5f))
+                        .clip(RoundedCornerShape(28.dp)),
+                    contentColor = Color(0xffFF5E00),
+                    color = Color(android.graphics.Color.parseColor(leadData.typeColor))
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
                         text = leadData.type,
                         style = TextStyle(
-                            color = Color(0xffFF5E00),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
                         ),
                     )
                 }

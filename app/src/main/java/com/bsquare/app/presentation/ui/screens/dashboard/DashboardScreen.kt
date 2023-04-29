@@ -18,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+
+ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,7 +63,7 @@ fun DashboardScreen(
 fun ColumnScope.CalenderSection(
     viewModel: DashboardViewModel) {
     Card(
-        modifier = Modifier.padding(bottom = 10.dp)
+        modifier = Modifier.fillMaxWidth().padding(start = 7.5.dp, end = 7.5.dp, bottom = 10.dp, top = 1.dp)
     ) {
         AndroidView(factory = {CalendarView(it)},
             modifier = Modifier.weight(1f),
@@ -189,14 +190,14 @@ fun FeatureItem(
         modifier = Modifier
             .padding(7.5.dp)
             .aspectRatio(1.2f)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(18.dp))
             .background(color = Color(android.graphics.Color.parseColor(feature.bgColor)))
     )
     {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(15.dp)
+                .padding(25.dp)
         ) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)

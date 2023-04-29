@@ -127,6 +127,10 @@ dependencies {
     implementation "com.google.android.gms:play-services-maps:18.0.2"
 
 
+    //swipeRefresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.25.1"
+
+
 
 
 }

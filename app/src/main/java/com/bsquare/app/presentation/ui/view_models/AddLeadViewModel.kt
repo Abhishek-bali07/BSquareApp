@@ -181,8 +181,8 @@ class AddLeadViewModel @Inject constructor(
 
                     EmitType.Navigate -> {
                         it.value?.apply {
-                            castValueToRequiredTypes<Destination.NoArgumentsDestination>()?.let { destination ->
-                                appNavigator.tryNavigateBack(destination(),inclusive = true)
+                            castValueToRequiredTypes<Destination>()?.let { destination ->
+                                appNavigator.tryNavigateBack()
                             }
                         }
                     }

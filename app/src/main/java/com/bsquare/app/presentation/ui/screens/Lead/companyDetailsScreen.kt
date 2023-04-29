@@ -375,7 +375,7 @@ fun CompanyTypeSection(companyDetailViewModel: CompanyDetailViewModel,baseViewMo
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.LightGray)
-            .padding(horizontal = 25.dp, vertical = 10.dp),
+            .padding( vertical = 8.dp),
     ) {
         StatusSection(companyDetailViewModel,baseViewModel)
 
@@ -394,8 +394,8 @@ fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel, baseVi
             Text(text = "Status:")
             Surface(
                 modifier = Modifier
-                    .size(width = 100.dp, height = 30.dp)
-                    .padding(horizontal = 20.dp)
+                    .size(width = 110.dp, height = 30.dp)
+                    .padding(horizontal = 25.dp)
                     .clip(RoundedCornerShape(25.dp))
                     .background(color = Color.White.copy(alpha = .5f))
             ) {
@@ -451,7 +451,7 @@ fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel, baseVi
 fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel,baseViewModel: BaseViewModel) {
     Row(
         modifier = Modifier
-            .weight(1f),
+            .weight(1f).padding(horizontal = 15.dp),
 
 
         ) {

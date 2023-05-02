@@ -13,5 +13,9 @@ enum class EmitType {
     LeadsDetails,
     LeadAdded,
     LeadRemoved,
-    AddNewLead
+    AddNewLead,
+    FollowItem,
+    UpcomingFollow,
+    OverdueFollow,
+    DoneFollow,
 }

@@ -11,6 +11,7 @@ import com.bsquare.core.entities.ShortDetails
 import com.bsquare.core.usecases.DashboardUseCase
 import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
@@ -50,6 +51,15 @@ class DashboardViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+
+
+  /*  fun signOut() {
+        isBusy = true
+        delay(2000)
+        isLoggedIn = false
+        isBusy = false
+    }
+*/
 
 
 

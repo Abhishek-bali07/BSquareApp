@@ -40,6 +40,9 @@ sealed class Destination(
  object AddleadScreen: NoArgumentsDestination(AppRoutes.ADDLEAD)
 
 
+ object FollowupScreen: NoArgumentsDestination(AppRoutes.FOLLOW)
+
+
 }
 
 

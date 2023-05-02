@@ -11,6 +11,7 @@ import com.bsquare.app.presentation.ui.screens.Lead.CompanyDetailScreen
 import com.bsquare.app.presentation.ui.screens.Lead.FilterScreen
 import com.bsquare.app.presentation.ui.screens.Lead.LeadScreen
 import com.bsquare.app.presentation.ui.screens.dashboard.DashboardScreen
+import com.bsquare.app.presentation.ui.screens.followup.FollowupScreen
 import com.bsquare.app.presentation.ui.screens.intro.SplashScreen
 import com.bsquare.app.presentation.ui.screens.login.LoginScreen
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
@@ -57,6 +58,10 @@ fun MainNavGraph(
 
         composable(destination = Destination.AddleadScreen){
             AddLeadScreen()
+        }
+
+        composable(destination = Destination.FollowupScreen){
+            FollowupScreen()
         }
 
     }

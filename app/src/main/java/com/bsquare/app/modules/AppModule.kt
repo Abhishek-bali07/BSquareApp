@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.bsquare.app.data.repositories.*
 import com.bsquare.app.utills.helper_impl.AppStoreImpl
 import com.bsquare.core.domain.repositories.dashboard.DashboardRepository
+import com.bsquare.core.domain.repositories.followup.FollowupRepository
 import com.bsquare.core.domain.repositories.intro.SplashRepository
 import com.bsquare.core.domain.repositories.lead.AddLeadRepository
 import com.bsquare.core.domain.repositories.lead.CompanyDetailsRepository
@@ -63,4 +64,8 @@ interface AppModule {
 
     @Binds
     fun bindAddLeadRepository(repo:AddLeadRepositoryImpl) : AddLeadRepository
+
+
+    @Binds
+    fun bindFollowRepository(repo:FollowupRepositoryImpl) : FollowupRepository
 }

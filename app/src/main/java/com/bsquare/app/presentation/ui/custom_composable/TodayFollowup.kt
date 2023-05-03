@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -29,12 +31,14 @@ import com.bsquare.core.entities.Follow
 
 @Composable
 fun TodayFollowup(
-    followupViewModel: FollowupViewModel,follow: Follow
-){
-    val screenHeightBy40 = LocalConfiguration.current.screenHeightDp * 0.40f
+    followupViewModel: FollowupViewModel,
 
-   LazyColumn( modifier = Modifier.fillMaxSize()) {
-            items(followupViewModel.ftoday){ item ->
+){  Column(  verticalArrangement = Arrangement.SpaceBetween,
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(15.dp))
+{
+    LazyColumn( modifier = Modifier.fillMaxWidth().weight(1f)) {
+        items(followupViewModel.ftoday){ item ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -56,7 +60,7 @@ fun TodayFollowup(
                     ) {
                         Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                             AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current).data(follow.companyIconUrl)
+                                model = ImageRequest.Builder(LocalContext.current).data(item.companyIconUrl)
                                     .decoderFactory(SvgDecoder.Factory()).build(),
                                 contentDescription = null,
                                 modifier = Modifier
@@ -68,13 +72,13 @@ fun TodayFollowup(
                                 verticalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = follow.companyName, style = TextStyle(
+                                    text = item.companyName, style = TextStyle(
                                         color = Color.Black, fontSize = 18.sp, fontWeight = FontWeight.Bold
                                     ), modifier = Modifier.padding(horizontal = 10.dp)
                                 )
 
                                 Text(
-                                    text = follow.ownerName, style = TextStyle(
+                                    text = item.ownerName, style = TextStyle(
                                         color = Color.Black, fontSize = 16.sp,
                                     ), modifier = Modifier.padding(horizontal = 10.dp)
                                 )
@@ -91,7 +95,7 @@ fun TodayFollowup(
                         ) {
                             Text(
                                 modifier = Modifier.padding(vertical = 3.dp, horizontal = 5.dp),
-                                text = follow.time,
+                                text = item.time,
                                 style = TextStyle(
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.Bold,
@@ -103,8 +107,16 @@ fun TodayFollowup(
                 }
 
             }
-            }
-   }
+        }
+    }
+    Button(
+        onClick = followupViewModel::onBtnClicked,
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray),
+        modifier = Modifier.fillMaxWidth().height(50.dp)) {
+        Text(text = "Add Task",color = Color.White)
+    }
+}
+
 
 
 

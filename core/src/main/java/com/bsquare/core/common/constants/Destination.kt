@@ -42,6 +42,8 @@ sealed class Destination(
 
  object FollowupScreen: NoArgumentsDestination(AppRoutes.FOLLOW)
 
+ object AddTaskScreen: NoArgumentsDestination(AppRoutes.ADDTASK)
+
 
 }
 

@@ -11,11 +11,13 @@ import com.bsquare.app.presentation.ui.screens.Lead.CompanyDetailScreen
 import com.bsquare.app.presentation.ui.screens.Lead.FilterScreen
 import com.bsquare.app.presentation.ui.screens.Lead.LeadScreen
 import com.bsquare.app.presentation.ui.screens.dashboard.DashboardScreen
+import com.bsquare.app.presentation.ui.screens.followup.AddTaskScreen
 import com.bsquare.app.presentation.ui.screens.followup.FollowupScreen
 import com.bsquare.app.presentation.ui.screens.intro.SplashScreen
 import com.bsquare.app.presentation.ui.screens.login.LoginScreen
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.core.common.constants.Destination
+import com.bsquare.core.entities.Follow
 import com.bsquare.core.utils.helper.NavigationIntent
 import kotlinx.coroutines.channels.Channel
 
@@ -29,7 +31,7 @@ fun MainNavGraph(
     navHostController.NavEffects(navigationChannel)
     AppNavHost(
             navController = navHostController,
-            startDestination = Destination.DashboardScreen,
+            startDestination = Destination.FollowupScreen,
             modifier = Modifier.padding(paddingValues),
             enterTransition = AppScreenTransitions.ScreenEnterTransition,
             popEnterTransition = AppScreenTransitions.ScreenPopEnterTransition,
@@ -62,6 +64,10 @@ fun MainNavGraph(
 
         composable(destination = Destination.FollowupScreen){
             FollowupScreen()
+        }
+
+        composable(destination = Destination.AddTaskScreen){
+            AddTaskScreen()
         }
 
     }

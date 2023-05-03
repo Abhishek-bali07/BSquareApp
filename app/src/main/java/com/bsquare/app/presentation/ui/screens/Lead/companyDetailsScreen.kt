@@ -33,8 +33,6 @@ import com.bsquare.app.presentation.ui.custom_composable.AddNote
 import com.bsquare.app.presentation.ui.custom_composable.AddTask
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
-import com.bsquare.core.common.constants.Destination
-import com.bsquare.core.entities.Feature
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -44,7 +42,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CompanyDetailScreen(
-    companyDetailViewModel: CompanyDetailViewModel = hiltViewModel(), baseViewModel: BaseViewModel,
+    companyDetailViewModel: CompanyDetailViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel,
 ) {
     val scaffoldState = rememberScaffoldState()
     Scaffold(

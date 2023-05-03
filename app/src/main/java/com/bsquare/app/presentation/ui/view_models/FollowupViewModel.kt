@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castListToRequiredTypes
 import com.bsquare.app.presentation.states.castValueToRequiredTypes
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.Follow
 import com.bsquare.core.usecases.FollowupUseCase
@@ -76,4 +77,14 @@ private val appNavigator: AppNavigator
         "Overdue",
         " Done"
     )
+
+
+    fun onBtnClicked(){
+        appNavigator.tryNavigateTo(
+            Destination.AddTaskScreen(),
+            popUpToRoute = null,
+            inclusive = false,
+            isSingleTop = false
+        )
+    }
 }

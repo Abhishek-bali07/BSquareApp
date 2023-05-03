@@ -23,7 +23,8 @@ import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddActivity(
-    companyDetailViewModel: CompanyDetailViewModel,tabInt: Int
+    companyDetailViewModel: CompanyDetailViewModel,
+      tabInt: Int
 ) {
 
     Column(

@@ -42,7 +42,7 @@ class FollowupRepositoryImpl @Inject constructor() : FollowupRepository{
                     companyIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
                 )
              },
-                due =  MutableList(1){
+                done =  MutableList(1){
                         idx -> Follow(
                     id = "ID_${idx+1}",
                     companyName = "INFOSYS",

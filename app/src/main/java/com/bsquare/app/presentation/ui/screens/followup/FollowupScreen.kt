@@ -18,7 +18,12 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bsquare.app.presentation.ui.custom_composable.FollowupDone
+import com.bsquare.app.presentation.ui.custom_composable.TodayFollowup
+import com.bsquare.app.presentation.ui.custom_composable.TodayOverdue
+import com.bsquare.app.presentation.ui.custom_composable.TodayUpcoming
 import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
+import com.bsquare.core.entities.Follow
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import kotlinx.coroutines.launch
@@ -26,7 +31,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FollowupScreen(
-    followupViewModel: FollowupViewModel = hiltViewModel()
+    followupViewModel: FollowupViewModel = hiltViewModel(),
 ){
     val scaffoldState = rememberScaffoldState()
     Scaffold(scaffoldState = scaffoldState
@@ -97,14 +102,15 @@ fun TaskListSection(followupViewModel: FollowupViewModel) {
                     tabPositions ->  TabRowDefaults.Indicator(
                     Modifier
                         .fillMaxWidth()
-                        .pagerTabIndicatorOffset(pagerState, tabPositions)
+                        .pagerTabIndicatorOffset(pagerState, tabPositions),
+                    color = Color(0xffFF0303)
                     )
                 }) {
                     followupViewModel.pages.forEachIndexed{index, title ->
                         Tab(modifier = Modifier.background(color = Color.White),
                             selectedContentColor = Color(0xffFF5E00),
                             unselectedContentColor = Color.Black,
-                            text = { Text(title, fontSize = 9.sp) },
+                            text = { Text(title, fontSize = 12.sp) },
                             selected = pagerState.currentPage == index,
                             onClick = {
                                 scope.launch {
@@ -119,12 +125,19 @@ fun TaskListSection(followupViewModel: FollowupViewModel) {
             modifier = Modifier.fillMaxWidth(),
             state = pagerState
         ) {
-            page -> when (page) {
+            page ->
+            when (page) {
                 0-> {
-
+                    TodayFollowup(followupViewModel)
                 }
                 1->{
-
+                    TodayUpcoming(followupViewModel)
+                }
+                2->{
+                    TodayOverdue(followupViewModel)
+                }
+                3->{
+                    FollowupDone(followupViewModel)
                 }
             }
         }

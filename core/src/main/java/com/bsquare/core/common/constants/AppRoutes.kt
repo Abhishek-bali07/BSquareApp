@@ -9,4 +9,5 @@ object AppRoutes {
     const val FILTER = "filter"
     const val ADDLEAD = "add lead"
     const val FOLLOW = "follow up"
+    const val  ADDTASK = "add task"
 }

@@ -13,6 +13,10 @@
     <string name="welcome_to_bsquare">Welcome to B Square</string>
 
 
+
+    <string name="add_task">Add Task</string>
+
+
     <string name="location_rationale_message">We need your current location for contract. Please grant this permission.</string>
     <string name="all_permission_not_granted">We need your current location for contract. Please grant this permission.</string>
     <string name="exact_permission_not_granted">Getting your exact location is important for this app.  Please grant us fine location. Thank you</string>

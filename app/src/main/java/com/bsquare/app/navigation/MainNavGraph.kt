@@ -67,7 +67,7 @@ fun MainNavGraph(
         }
 
         composable(destination = Destination.AddTaskScreen){
-            AddTaskScreen()
+            AddTaskScreen(baseViewModel = baseViewModel)
         }
 
     }

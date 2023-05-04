@@ -18,4 +18,5 @@ enum class EmitType {
     UpcomingFollow,
     OverdueFollow,
     DoneFollow,
+    TaskDetailData,
 }

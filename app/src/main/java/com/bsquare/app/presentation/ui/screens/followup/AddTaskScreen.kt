@@ -73,7 +73,7 @@ fun AddTaskScreen(
             AppButton(
                 enable = addTaskViewModel.enableBtn.value,
                 loading = addTaskViewModel.addLoading.value,
-                action = { /*TODO*/ },
+                action = addTaskViewModel::newTask,
                 name = R.string.add_now
             )
 

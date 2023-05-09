@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castValueToRequiredTypes
 import com.bsquare.app.utills.helper_impl.SavableMutableState
 import com.bsquare.app.utills.helper_impl.UiData
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.TaskDetailData
 import com.bsquare.core.usecases.AddTaskUseCase
@@ -34,6 +35,8 @@ class AddTaskViewModel @Inject constructor(
     val dueDate = mutableStateOf("")
 
     val taskTime = mutableStateOf("")
+
+    var toastNotify = mutableStateOf("")
 
 
     val isMenuExpanded = mutableStateOf(false)
@@ -86,6 +89,54 @@ class AddTaskViewModel @Inject constructor(
                 else -> {}
             }
         }.launchIn(viewModelScope)
+    }
+
+
+    fun newTask(){
+        useCase.addTask(
+            taskFor = selectLeads.value,
+            taskType = taskType.value,
+            dueDate = dueDate.value,
+            customDate = selectedDate.value,
+            taskTime = selectedTime.value,
+            taskRepeat = repeatVal.value,
+            taskAssign= taskAssign.value,
+            taskDescription = taskDesc.value
+        ).onEach {
+            when(it.type){
+
+                EmitType.Loading -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<Boolean>()?.let {
+                            addLoading.setValue(it)
+                        }
+                    }
+                }
+                EmitType.Navigate -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<Destination>()?.let { destination ->
+                            appNavigator.tryNavigateBack()
+                        }
+                    }
+                }
+                EmitType.NetworkError -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<String>()?.let {
+                            toastNotify.value = it
+                        }
+                    }
+                }
+                EmitType.BackendError -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<String>()?.let {
+                            toastNotify.value = it
+                        }
+                    }
+                }
+
+                else -> {}
+            }
+        }
     }
 
 }

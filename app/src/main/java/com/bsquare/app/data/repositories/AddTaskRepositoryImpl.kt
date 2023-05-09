@@ -6,6 +6,7 @@ import com.bsquare.core.entities.Assign
 import com.bsquare.core.entities.Task
 import com.bsquare.core.entities.TaskDetailData
 import com.bsquare.core.entities.Type
+import com.bsquare.core.entities.responses.AddNewTaskResponse
 import com.bsquare.core.entities.responses.TaskInfoResponse
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -73,4 +74,26 @@ class AddTaskRepositoryImpl @Inject constructor() : AddTaskRepository{
         )
         )
     }
+
+    override suspend fun addTaskData(
+        taskFor: String,
+        taskType: String,
+        dueDate: String,
+        customDate: String,
+        taskTime: String,
+        taskRepeat: String,
+        taskAssign: String,
+        taskDescription: String,
+        userId: String
+    ): Resource<AddNewTaskResponse> {
+       delay(2000L)
+        return Resource.Success(
+            AddNewTaskResponse(
+                status = true,
+                message = "Success"
+            )
+        )
+    }
+
+
 }

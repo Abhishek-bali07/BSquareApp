@@ -20,15 +20,6 @@ class AddLeadUseCase @Inject constructor(
         repository.currentLocation(prefs.userId(), lat, lng)
     }
 
-
-
-
-
-
-
-
-
-
     fun AddLead(
         clientName:String,
         emailId: String,

@@ -17,7 +17,7 @@ class LeadRepositoryImpl @Inject constructor() : LeadRepository {
             LeadDataResponse(
                 status = true,
                 message = "Success",
-                leads = MutableList(20) { idx ->
+                leads = MutableList(5) { idx ->
                     Leads(date = "27th, July, 2023",
                         leadData = MutableList(4) { idx ->
                             LeadData(

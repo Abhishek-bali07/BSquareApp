@@ -7,6 +7,7 @@ import com.bsquare.app.presentation.states.castListToRequiredTypes
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.Feature
+import com.bsquare.core.entities.Leads
 import com.bsquare.core.entities.ShortDetails
 import com.bsquare.core.usecases.DashboardUseCase
 import com.bsquare.core.utils.helper.AppNavigator
@@ -29,12 +30,25 @@ class DashboardViewModel @Inject constructor(
         getFeatureData()
     }
     fun onBoxClicked(feature: Feature) {
-        appNavigator.tryNavigateTo(
-            Destination.LeadScreen(featureId = feature.feature_Id),
-            popUpToRoute =null,
-            inclusive = false,
-            isSingleTop = true
-        )
+        feature.feature_Id.let {
+            if(feature.type == "Leads") {
+                appNavigator.tryNavigateTo(
+                    Destination.LeadScreen(featureId = feature.feature_Id),
+                    popUpToRoute = null,
+                    inclusive = false,
+                    isSingleTop = true
+                )
+            } else{}
+            if(feature.type == "Follow-up") {
+                appNavigator.tryNavigateTo(
+                    Destination.FollowupScreen(),
+                    popUpToRoute = null,
+                    inclusive = false,
+                    isSingleTop = true
+                )
+            } else{}
+        }
+
     }
 
      fun getFeatureData() {
@@ -46,6 +60,8 @@ class DashboardViewModel @Inject constructor(
                         features.addAll(it)
                     }
                 }
+
+
                 else -> {}
             }
         }.launchIn(viewModelScope)

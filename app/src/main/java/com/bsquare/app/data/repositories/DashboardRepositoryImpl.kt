@@ -17,15 +17,45 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
             FeaturesResponse(
                 status = true,
                 message = "Success",
-                feature = MutableList(4) {idx->
+                feature = listOf(
                     Feature(
-                        feature_Id = "ID_${idx+1}",
+                        feature_Id = "1",
+                        type = "Meetings",
+                        quantity = 25,
+                        bgColor = "#03A0E2",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                    ),
+                    Feature(
+                        feature_Id = "2",
+                        type = "Tasks",
+                        quantity = 25,
+                        bgColor = "#8576FD",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                    ),
+                    Feature(
+                        feature_Id = "3",
+                        type = "Follow-up",
+                        quantity = 25,
+                        bgColor = "#F95A7B",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                    ),
+                    Feature(
+                        feature_Id = "4",
                         type = "Leads",
                         quantity = 20,
                         bgColor = "#1AB1B0",
                         identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
                     )
-                }
+                )
+//                feature = MutableList(4) {idx->
+//                    Feature(
+//                        feature_Id = "ID_${idx+1}",
+//                        type = "Leads",
+//                        quantity = 20,
+//                        bgColor = "#1AB1B0",
+//                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+//                    )
+//                }
 
             )
         )

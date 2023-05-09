@@ -119,7 +119,7 @@ fun ColumnScope.TabBarSection(companyDetailViewModel: CompanyDetailViewModel) {
                 TabRowDefaults.Indicator(
                     Modifier
                         .fillMaxWidth()
-                        .pagerTabIndicatorOffset(pagerState, tabPositions)
+                        .pagerTabIndicatorOffset(pagerState, tabPositions),color = Color(0xffFF0303)
                 )
             }) {
             companyDetailViewModel.pages.forEachIndexed { index, title ->
@@ -408,7 +408,7 @@ fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel, baseVi
                         ),
                         text = companyDetailViewModel.lSelectedText.value,
                         style = TextStyle(
-                            color = Color(0xffFF5E00),
+                            color = Color(0xff212121),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold
                         ),
@@ -473,7 +473,7 @@ fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel,baseVi
                         ),
                         text = companyDetailViewModel.mSelectedText.value,
                         style = TextStyle(
-                            color = Color(0xffFF5E00),
+                            color = Color(0xff212121),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         ),

@@ -204,39 +204,33 @@ fun TodayListSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     //date section
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(12.dp),
-                        shape = RectangleShape
+                    Column(
+                        modifier = Modifier.fillMaxWidth(.90f),
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        Column(
+                        Text(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
-                                text = item.date,
-                                style = TextStyle.Default.copy(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
+                            text = item.date,
+                            style = TextStyle.Default.copy(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
                             )
-                            LazyColumn(modifier = Modifier.height(screenHeightBy40.dp), userScrollEnabled = false) {
-                                items(item.leadData) {
-                                    LeadDataItem(leadData = it) {
-                                        baseViewModel.leadToLeadDetailsArg.value = it.id
-                                        leadViewModel.onCardClicked()
-                                    }
-                                    Spacer(modifier = Modifier.height(8.dp))
+                        )
+                        LazyColumn(
+                            modifier = Modifier.background(color = Color.Cyan)
+                                .height(screenHeightBy40.dp),userScrollEnabled = false) {
+                            items(item.leadData) {
+                                LeadDataItem(leadData = it) {
+                                    baseViewModel.leadToLeadDetailsArg.value = it.id
+                                    leadViewModel.onCardClicked()
                                 }
-
-
+                               // Spacer(modifier = Modifier.height(5.dp))
                             }
+
+
                         }
                     }
                 }
@@ -262,6 +256,7 @@ fun LeadDataItem(
             .padding(horizontal = 5.dp)
             .height(75.dp)
             .clickable(onClick = onItemClicked),
+        backgroundColor = MaterialTheme.colors.surface                                                                                                                              ,
         shape = RoundedCornerShape(5.dp), elevation = 10.dp
     ) {
         Row(
@@ -269,7 +264,7 @@ fun LeadDataItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(10.dp),
         ) {
             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                 AsyncImage(

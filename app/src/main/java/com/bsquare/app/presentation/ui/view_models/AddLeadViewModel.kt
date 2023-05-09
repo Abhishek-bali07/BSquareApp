@@ -168,7 +168,9 @@ class AddLeadViewModel @Inject constructor(
                 companyName = clientName.value,
                 website = websiteName.value,
                 saleValue = saleValue.value,
-                notes = notes.value, lat =it.latitude, lng = it.longitude
+                notes = notes.value,
+                lat =it.latitude,
+                lng = it.longitude
             ).onEach {
                 when (it.type) {
                     EmitType.Loading -> {

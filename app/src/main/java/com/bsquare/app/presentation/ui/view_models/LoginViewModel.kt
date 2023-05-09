@@ -15,8 +15,10 @@ import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.usecases.LoginUseCase
 import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -24,7 +26,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val useCases: LoginUseCase,
     private val appNavigator: AppNavigator,
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     val companyName = mutableStateOf("")
@@ -33,6 +35,32 @@ class LoginViewModel @Inject constructor(
     var showPassword by mutableStateOf(false)
     var toastNotify = mutableStateOf("")
 
+    val isPasswordError = mutableStateOf(false)
+
+
+    init {
+        validateInputs()
+    }
+
+    private fun validateInputs() {
+        viewModelScope.launch {
+            while (true){
+                delay(200L)
+                enableBtn.setValue(
+                    when{
+                        companyName.value.isEmpty() ->{false}
+                        mobile.value.isEmpty() ->{false}
+                        password.value.isEmpty() ->{false}
+
+
+
+                        else -> true
+                    }
+                )
+            }
+        }
+    }
+
 
     fun onChangeName(n: String) {
         companyName.value = n
@@ -40,9 +68,17 @@ class LoginViewModel @Inject constructor(
 
     fun onChangePassword(p: String) {
         password.value = p
-        enableBtn.setValue(derivedStateOf {
-            password.value.length >= 8
-        }.value)
+        savedStateHandle[UiData.p.toString()] = p
+        isPasswordError.value = derivedStateOf {
+            if (p.isEmpty()) return@derivedStateOf false
+            if(p.matches(
+                    Regex("^" +
+                            "(?=.*[@#$%^&+=])" +     // at least 1 special character
+                            "(?=\\S+$)" +            // no white spaces
+                            ".{4,}" +                // at least 4 characters
+                            "$"))) return@derivedStateOf false
+            true
+        }.value
     }
 
 

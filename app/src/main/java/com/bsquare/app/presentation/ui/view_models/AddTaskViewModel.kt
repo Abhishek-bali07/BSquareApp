@@ -7,13 +7,16 @@ import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castValueToRequiredTypes
 import com.bsquare.app.utills.helper_impl.SavableMutableState
 import com.bsquare.app.utills.helper_impl.UiData
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.TaskDetailData
 import com.bsquare.core.usecases.AddTaskUseCase
 import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 @HiltViewModel
 class AddTaskViewModel @Inject constructor(
@@ -34,6 +37,8 @@ class AddTaskViewModel @Inject constructor(
     val dueDate = mutableStateOf("")
 
     val taskTime = mutableStateOf("")
+
+    var toastNotify = mutableStateOf("")
 
 
     val isMenuExpanded = mutableStateOf(false)
@@ -68,10 +73,27 @@ class AddTaskViewModel @Inject constructor(
 
     init {
         initialData()
+        validateInputs()
     }
 
+    private fun validateInputs() {
+        viewModelScope.launch{
+            while (true){
+                delay(200L)
+                enableBtn.setValue(
+                    when{
+                        selectLeads.value.isEmpty() -> {false}
+                        taskType.value.isEmpty() ->{false}
+                        selectedDate.value.isEmpty() ->{false}
+                        taskAssign.value.isEmpty() ->{false}
+                        repeatVal.value.isEmpty() ->{false}
+                        taskDesc.value.isEmpty() ->{false}
 
-
+                        else -> true
+                    })
+            }
+        }
+    }
 
 
     fun initialData(){
@@ -87,6 +109,61 @@ class AddTaskViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+
+    fun newTask(){
+        useCase.addTask(
+            taskFor = selectLeads.value,
+            taskType = taskType.value,
+            dueDate = dueDate.value,
+            customDate = selectedDate.value,
+            taskTime = selectedTime.value,
+            taskRepeat = repeatVal.value,
+            taskAssign= taskAssign.value,
+            taskDescription = taskDesc.value
+        ).onEach {
+            when(it.type){
+
+                EmitType.Loading -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<Boolean>()?.let {
+                            addLoading.setValue(it)
+                        }
+                    }
+                }
+                EmitType.Navigate -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<Destination>()?.let { destination ->
+                            appNavigator.tryNavigateBack()
+                        }
+                    }
+                }
+                EmitType.NetworkError -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<String>()?.let {
+                            toastNotify.value = it
+                        }
+                    }
+                }
+                EmitType.BackendError -> {
+                    it.value?.apply {
+                        castValueToRequiredTypes<String>()?.let {
+                            toastNotify.value = it
+                        }
+                    }
+                }
+
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
+
+
+
+
+
+
+
 
 }
 

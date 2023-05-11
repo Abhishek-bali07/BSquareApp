@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
@@ -209,10 +210,11 @@ fun TodayListSection(
                     //date section
                     Column(
                         modifier = Modifier.fillMaxWidth(.90f),
-                        horizontalAlignment = Alignment.Start
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
                             text = item.date,
                             style = TextStyle.Default.copy(
                                 fontSize = 18.sp,
@@ -220,14 +222,14 @@ fun TodayListSection(
                             )
                         )
                         LazyColumn(
-                            modifier = Modifier.background(color = Color.Cyan)
+                            modifier = Modifier.background(color = Color.White)
                                 .height(screenHeightBy40.dp),userScrollEnabled = false) {
                             items(item.leadData) {
                                 LeadDataItem(leadData = it) {
                                     baseViewModel.leadToLeadDetailsArg.value = it.id
                                     leadViewModel.onCardClicked()
                                 }
-                               // Spacer(modifier = Modifier.height(5.dp))
+                                Spacer(modifier = Modifier.height(5.dp))
                             }
 
 
@@ -253,18 +255,18 @@ fun LeadDataItem(
 
     Card(
         modifier = Modifier
-            .padding(horizontal = 5.dp)
+            .padding(horizontal = 2.dp)
             .height(75.dp)
             .clickable(onClick = onItemClicked),
         backgroundColor = MaterialTheme.colors.surface                                                                                                                              ,
-        shape = RoundedCornerShape(5.dp), elevation = 10.dp
+        shape = RoundedCornerShape(6.dp), elevation = 18.dp
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
+                .padding(5.dp),
         ) {
             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                 AsyncImage(

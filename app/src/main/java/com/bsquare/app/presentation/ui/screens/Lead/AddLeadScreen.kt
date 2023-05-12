@@ -1,6 +1,7 @@
 package com.bsquare.app.presentation.ui.screens.Lead
 
 
+import AlternateNumberInputField
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -13,6 +14,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -23,9 +26,12 @@ import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -38,7 +44,10 @@ import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.states.Dialog
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.custom_composable.AppButton
+import com.bsquare.app.presentation.ui.custom_composable.MobileNumberInputField
+import com.bsquare.app.presentation.ui.custom_composable.StrickyButton
 import com.bsquare.app.presentation.ui.custom_composable.requestPermissionComposable
+import com.bsquare.app.presentation.ui.screens.login.MobileInputTextField
 import com.bsquare.app.presentation.ui.view_models.AddLeadViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -57,7 +66,7 @@ fun AddLeadScreen(
     addLeadViewModel: AddLeadViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberScaffoldState()
-    val scrollState = rememberScrollState()
+
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
     val coroutineScope = rememberCoroutineScope()
@@ -74,7 +83,6 @@ fun AddLeadScreen(
     { paddingValues ->
         Column(
             modifier = Modifier
-                .verticalScroll(scrollState)
                 .padding(paddingValues)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
@@ -106,12 +114,12 @@ fun AddLeadScreen(
 
             AddClientSection(addLeadViewModel, permissionState, cameraPositionState, coroutineScope )
 
-            AppButton(
+           /* AppButton(
                 enable = addLeadViewModel.enableBtn.value,
                 loading = addLeadViewModel.addLoading.value,
                 action = addLeadViewModel::newLead,
-                name = R.string.add_now
-            )
+                name = R.string.add_now*/
+
         }
 
     }
@@ -473,17 +481,22 @@ fun AddClientSection(
     permissionState: MultiplePermissionsState,
     cameraPositionState: CameraPositionState,
     uiScope: CoroutineScope,
+
 ) {
-    Surface(
+    val scrollState = rememberScrollState()
+    val focusMgr = LocalFocusManager.current
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        color = Color.White
+
+
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth().weight(1f)
+                .verticalScroll(scrollState)
                 .padding(horizontal = 12.dp, vertical = 5.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Bottom,
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 10.dp),
@@ -524,25 +537,48 @@ fun AddClientSection(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 text = "Phone Number", style = TextStyle(fontWeight = FontWeight.W500)
             )
-            OutlinedTextField(
+            MobileNumberInputField(
+                onNumberChange = addLeadViewModel::onNumberChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                textFieldColors =TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                ) )
+           /* OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 10.dp, horizontal = 10.dp)
                     .size(height = 60.dp, width = 300.dp),
                 value = addLeadViewModel.phoneNumber.value,
                 onValueChange = addLeadViewModel::onNumberChange,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 placeholder = { Text(text = "Enter Phone Number") },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.LightGray
                 )
-            )
+            )*/
             Text(
                 modifier = Modifier.padding(horizontal = 10.dp),
                 text = "Alternate Phone Number", style = TextStyle(fontWeight = FontWeight.W500)
             )
 
-            OutlinedTextField(
+           AlternateNumberInputField(
+                onNumberChange = addLeadViewModel::onAlternateChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 60.dp, width = 300.dp),
+                textFieldColors =TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.LightGray
+                ) )
+
+
+            /*OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 10.dp, horizontal = 10.dp)
@@ -550,11 +586,12 @@ fun AddClientSection(
                 value = addLeadViewModel.alternateNumber.value,
                 onValueChange = addLeadViewModel::onAlternateChange,
                 placeholder = { Text(text = "Enter Alternate Number") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.LightGray
                 )
-            )
+            )*/
 
             Text(
                 modifier = Modifier.padding(horizontal = 10.dp),
@@ -588,6 +625,12 @@ fun AddClientSection(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.LightGray
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusMgr.clearFocus()
+                    }
                 )
             )
             Text(
@@ -602,6 +645,12 @@ fun AddClientSection(
                 value = addLeadViewModel.saleValue.value,
                 onValueChange = addLeadViewModel::onsaleChange,
                 placeholder = { Text(text = "Enter sale value") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusMgr.clearFocus()
+                    }
+                ),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.LightGray
@@ -685,10 +734,27 @@ fun AddClientSection(
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.Black,
                     unfocusedBorderColor = Color.LightGray
-                )
+                ),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusMgr.clearFocus()
+                    }
+                ),
             )
 
         }
+
+        Surface(modifier = Modifier.fillMaxWidth()) {
+            StrickyButton(
+                enable = addLeadViewModel.enableBtn.value,
+                loading = addLeadViewModel.addLoading.value,
+                action = addLeadViewModel::newLead,
+                name = R.string.add_now)
+        }
+
+
+
 
     }
 }
@@ -733,7 +799,7 @@ fun SwitchButton(
             ) {
                 switchOn = !switchOn
                 addLeadViewModel.addedLatLng.value.let {
-                    if(it != null && switchOn){
+                    if (it != null && switchOn) {
                         uiScope.launch {
                             it.let {
                                 cameraPositionState.animate(
@@ -745,7 +811,7 @@ fun SwitchButton(
                                 )
                             }
                         }
-                    }else{
+                    } else {
                         multiplePermissionsState.launchMultiplePermissionRequest()
                     }
                 }

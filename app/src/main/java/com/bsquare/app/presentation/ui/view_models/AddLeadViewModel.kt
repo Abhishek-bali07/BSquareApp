@@ -1,5 +1,6 @@
 package com.bsquare.app.presentation.ui.view_models
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.material.DrawerState
 import androidx.compose.material.DrawerValue
@@ -66,6 +67,8 @@ class AddLeadViewModel @Inject constructor(
 
 
 
+
+
     init {
         validateInputs()
     }
@@ -88,13 +91,14 @@ class AddLeadViewModel @Inject constructor(
 
     fun onNumberChange(m: String) {
         phoneNumber.value = m
-        savedStateHandle[UiData.m.toString()] = m
+
+
+        /*savedStateHandle[UiData.m.toString()] = m
         isNumberError.value = derivedStateOf {
-           if(m.isEmpty()) return@derivedStateOf false
+            if(m.isEmpty()) return@derivedStateOf false
             if (m.matches(Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+\$"))) return@derivedStateOf false
             true
-        }.value
-
+        }.value*/
     }
 
     fun onAlternateChange(altnum: String) {

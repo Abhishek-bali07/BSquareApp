@@ -7,6 +7,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +39,7 @@ fun FilterScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun ChipSection() {
@@ -57,7 +64,7 @@ fun ChipSection() {
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             CustomChip(
-                selected = false,
+                selected = true,
                 text = "Inactive",
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
@@ -65,13 +72,20 @@ fun ChipSection() {
 
         }
     }
-    
-    
-    
-    
-    
-    
 
+
+
+    AssistChip(
+        onClick = { /* Do something! */ },
+        label = { Text("Assist Chip") },
+        leadingIcon = {
+            Icon(
+                Icons.Filled.Settings,
+                contentDescription = "Localized description",
+                Modifier.size(AssistChipDefaults.IconSize)
+            )
+        }
+    )
 }
 
 @Composable

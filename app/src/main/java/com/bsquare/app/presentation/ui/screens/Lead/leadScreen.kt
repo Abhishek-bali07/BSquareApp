@@ -207,34 +207,47 @@ fun TodayListSection(
                         .wrapContentHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    //date section
-                    Column(
-                        modifier = Modifier.fillMaxWidth(.90f),
-                        horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 5.dp),
-                            text = item.date,
-                            style = TextStyle.Default.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
+                    Card (
+                        modifier = Modifier.fillMaxWidth(.95f)
+                            .padding(horizontal = 2.dp, vertical = 5.dp),
+                        backgroundColor = MaterialTheme.colors.surface,
+                        elevation = 2.dp,
+                        shape = RoundedCornerShape(6.dp)){
+
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(.90f),
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(all =  5.dp),
+                                text = item.date,
+                                style = TextStyle.Default.copy(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             )
-                        )
-                        LazyColumn(
-                            modifier = Modifier.background(color = Color.White)
-                                .height(screenHeightBy40.dp),userScrollEnabled = false) {
-                            items(item.leadData) {
-                                LeadDataItem(leadData = it) {
-                                    baseViewModel.leadToLeadDetailsArg.value = it.id
-                                    leadViewModel.onCardClicked()
+                            LazyColumn(
+                                modifier = Modifier
+                                    .background(color = Color.White)
+                                    .height(screenHeightBy40.dp),userScrollEnabled = false) {
+                                items(item.leadData) {
+                                    LeadDataItem(leadData = it) {
+                                        baseViewModel.leadToLeadDetailsArg.value = it.id
+                                        leadViewModel.onCardClicked()
+                                    }
+                                    Spacer(modifier = Modifier.height(5.dp))
                                 }
-                                Spacer(modifier = Modifier.height(5.dp))
+
+
                             }
-
-
                         }
                     }
+                    //date section
+
                 }
 
             }
@@ -255,18 +268,19 @@ fun LeadDataItem(
 
     Card(
         modifier = Modifier
-            .padding(horizontal = 2.dp)
+            .padding(horizontal = 10.dp)
             .height(75.dp)
             .clickable(onClick = onItemClicked),
         backgroundColor = MaterialTheme.colors.surface                                                                                                                              ,
-        shape = RoundedCornerShape(6.dp), elevation = 18.dp
+        shape = RoundedCornerShape(6.dp),
+        elevation = 2.dp
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp),
+                .padding(8.dp),
         ) {
             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                 AsyncImage(

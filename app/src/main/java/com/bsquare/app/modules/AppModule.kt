@@ -12,6 +12,7 @@ import com.bsquare.core.domain.repositories.followup.FollowupRepository
 import com.bsquare.core.domain.repositories.intro.SplashRepository
 import com.bsquare.core.domain.repositories.lead.AddLeadRepository
 import com.bsquare.core.domain.repositories.lead.CompanyDetailsRepository
+import com.bsquare.core.domain.repositories.lead.FilterPageRepository
 import com.bsquare.core.domain.repositories.lead.LeadRepository
 import com.bsquare.core.domain.repositories.login.LoginRepository
 import com.bsquare.core.utils.helper.AppStore
@@ -73,4 +74,7 @@ interface AppModule {
 
     @Binds
     fun bindAddTaskRepository(repo:AddTaskRepositoryImpl) : AddTaskRepository
+
+    @Binds
+    fun bindFilterRepository(repo:FilterRepositoryImpl) : FilterPageRepository
 }

@@ -20,4 +20,5 @@ enum class EmitType {
     DoneFollow,
     TaskDetailData,
     getResponse,
+    leadFilterDetails,
 }

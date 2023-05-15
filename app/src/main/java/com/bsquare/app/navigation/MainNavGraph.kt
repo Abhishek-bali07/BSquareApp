@@ -55,7 +55,7 @@ fun MainNavGraph(
         }
 
         composable(destination = Destination.FilterScreen){
-            FilterScreen()
+            FilterScreen(baseViewModel = baseViewModel)
         }
 
         composable(destination = Destination.AddleadScreen){

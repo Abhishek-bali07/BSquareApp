@@ -1,38 +1,113 @@
 package com.bsquare.app.presentation.ui.screens.Lead
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontVariation.weight
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bsquare.app.R
+import com.bsquare.app.presentation.states.resourceImage
+import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.FilterViewModel
 
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterScreen(
+    baseViewModel: BaseViewModel,
     filterViewModel: FilterViewModel = hiltViewModel(),
 
     ) {
 
-    Surface(modifier = Modifier.fillMaxSize(1f)) {
-        Column(
-            modifier = Modifier.padding(10.dp)) {
+    val scaffoldState = rememberScaffoldState()
 
-            ChipSection(filterViewModel)
+    Scaffold(
+        scaffoldState = scaffoldState,
+
+
+        ) {
+            paddingValues -> Column(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize()
+        )  {
+
+        TopAppBar(
+            backgroundColor = Color(0xffDDDDDD), elevation = 2.dp, title = {
+                Text(
+                    "Filter", modifier = Modifier.fillMaxWidth(), style = TextStyle(
+                        color = Color.Black, textAlign = TextAlign.Center, fontSize = 20.sp,
+                    )
+                )
+            },
+            navigationIcon = {
+                IconButton(modifier = Modifier.
+                then(Modifier.size(24.dp)),
+                    onClick = { filterViewModel.appNavigator.tryNavigateBack()}) {
+                    Icon(
+                        Icons.Filled.Close,
+                        "contentDescription",
+                        tint = Color.White)
+                }
+            },
+            actions = {
+                Button(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    onClick = { filterViewModel.selectedItem.clear()},
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+                ) {
+                    Text(text = "RESET")
+                }
+            })
+
+            Surface(modifier = Modifier.fillMaxSize(1f)) {
+            Column(
+                modifier = Modifier.padding(10.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                ChipSection(filterViewModel)
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(1f)
+                        .height(height = 64.dp),
+
+                    onClick = {
+                        filterViewModel.appNavigator.tryNavigateBack()
+                         baseViewModel.changeToLeadDetailsArg.addAll(filterViewModel.selectedItem)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color(0xffFF0303)
+                    )
+                ) {
+                    Text(text = "Apply Filters", style = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.W700))
+                }
+            }
         }
+
+
+        }
+
     }
+
 
 }
 
@@ -44,23 +119,176 @@ fun ChipSection(
         modifier = Modifier.fillMaxWidth()
     ) {
         filterViewModel.filterDetails.collectAsState().value?.apply {
-            LazyRow {
+            Text(
+                text = "Data Lead added",
+                style = TextStyle(
+                fontWeight = FontWeight.W500,
+                fontSize = 18.sp
+            ))
+            LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(dataLead.size) { idx ->
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .padding(start = 15.dp, top = 15.dp, bottom = 15.dp)
+                            .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
                             .clickable {
                                 filterViewModel.onClickDataLeadChip(idx)
                             }
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(color = if (dataLead[idx].isSelected) Color.Red else Color.White)
-                            .padding(15.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(
+                                color = if (dataLead[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
+                                    0xffDDDDDD
+                                )
+                            )
+                            .padding(10.dp)
                     ) {
-                        Text(text = dataLead[idx].dataLeadName)
+                        Text(text = dataLead[idx].dataLeadName, style = TextStyle(
+                            fontSize = 14.sp
+                        ))
                     }
                 }
             }
+
+            Text(
+                text = "Labels",
+                style = TextStyle(
+                    fontWeight = FontWeight.W500,
+                    fontSize = 18.sp
+                ))
+
+            LazyVerticalGrid(columns = GridCells.Fixed(3),){
+                items(dataLabel.size){idx ->
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
+                            .clickable {
+                                filterViewModel.onClickDataLabelChip(idx)
+                            }
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(
+                                color = if (dataLabel[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
+                                    0xffDDDDDD
+                                )
+                            )
+                            .padding(10.dp)
+
+                        ) {
+                        Text(text = dataLabel[idx].labelName, style = TextStyle(
+                            fontSize = 14.sp
+                        ))
+                    }
+
+                }
+            }
+
+            Text(
+                text = "Status",
+                style = TextStyle(
+                    fontWeight = FontWeight.W500,
+                    fontSize = 18.sp
+                ))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3)
+            ){
+              items(dataStatus.size){idx ->
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
+                            .clickable {
+                                filterViewModel.onClickDataStatusChip(idx)
+                            }
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(
+                                color = if (dataStatus[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
+                                    0xffDDDDDD
+                                )
+                            )
+                            .padding(10.dp)
+
+                    ){
+                        Text(text = dataStatus[idx].statusName, style = TextStyle(
+                            fontSize = 14.sp
+                        ))
+                    }
+                }
+            }
+            Text(
+                text = "Source",
+                style = TextStyle(
+                    fontWeight = FontWeight.W500,
+                    fontSize = 18.sp
+                ))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3)
+            ){
+                items(dataSource.size){idx ->
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
+                            .clickable {
+                                filterViewModel.onClickDataSourceChip(idx)
+                            }
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(
+                                color = if (dataSource[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
+                                    0xffDDDDDD
+                                )
+                            )
+                            .padding(10.dp)
+
+                    ){
+                        Text(text = dataSource[idx].dataSourceName, style = TextStyle(
+                            fontSize = 14.sp
+                        )
+                        )
+                    }
+                }
+            }
+
+
+
+            Text(
+                text = "Team Member",
+                style = TextStyle(
+                    fontWeight = FontWeight.W500,
+                    fontSize = 18.sp
+                ))
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3)
+            ){
+                items(teamMember.size){idx ->
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
+                            .clickable {
+                                filterViewModel.onClickTeamMemberChip(idx)
+                            }
+                            .clip(RoundedCornerShape(25.dp))
+                            .background(
+                                color = if (teamMember[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
+                                    0xffDDDDDD
+                                )
+                            )
+                            .padding(10.dp)
+
+                    ){
+                        Text(text = teamMember[idx].teamMemberName, style = TextStyle(
+                            fontSize = 14.sp
+                        ))
+                    }
+                }
+            }
+
+        
+
+
         }
 
 

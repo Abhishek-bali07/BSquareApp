@@ -177,6 +177,13 @@ fun TodayListSection(
         }
     }, clearance = { false })
 
+   LaunchedEffect(key1 = baseViewModel.changeToLeadDetailsArg){
+       if(baseViewModel.changeToLeadDetailsArg.isNotEmpty()){
+           leadViewModel.getLeadsData()
+           baseViewModel.changeToLeadDetailsArg.clear()
+       }
+   }
+
 
     val screenHeightBy40 = LocalConfiguration.current.screenHeightDp * 0.40f
 
@@ -208,7 +215,8 @@ fun TodayListSection(
                     horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Card (
-                        modifier = Modifier.fillMaxWidth(.95f)
+                        modifier = Modifier
+                            .fillMaxWidth(.95f)
                             .padding(horizontal = 2.dp, vertical = 5.dp),
                         backgroundColor = MaterialTheme.colors.surface,
                         elevation = 2.dp,
@@ -223,7 +231,7 @@ fun TodayListSection(
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(all =  5.dp),
+                                    .padding(all = 5.dp),
                                 text = item.date,
                                 style = TextStyle.Default.copy(
                                     fontSize = 18.sp,

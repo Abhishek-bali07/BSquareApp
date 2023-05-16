@@ -1,12 +1,12 @@
 package com.bsquare.app.presentation.ui.screens.Lead
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.app.DatePickerDialog
+import android.util.Log
+import android.widget.DatePicker
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +28,8 @@ import com.bsquare.app.R
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.FilterViewModel
+import com.bsquare.core.entities.DataLead
+import java.util.*
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -43,71 +46,67 @@ fun FilterScreen(
         scaffoldState = scaffoldState,
 
 
+        ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
-            paddingValues -> Column(
-        modifier = Modifier
-            .padding(paddingValues)
-            .fillMaxSize()
-        )  {
 
-        TopAppBar(
-            backgroundColor = Color(0xffDDDDDD), elevation = 2.dp, title = {
+            TopAppBar(backgroundColor = Color(0xffDDDDDD), elevation = 2.dp, title = {
                 Text(
                     "Filter", modifier = Modifier.fillMaxWidth(), style = TextStyle(
                         color = Color.Black, textAlign = TextAlign.Center, fontSize = 20.sp,
                     )
                 )
-            },
-            navigationIcon = {
-                IconButton(modifier = Modifier.
-                then(Modifier.size(24.dp)),
-                    onClick = { filterViewModel.appNavigator.tryNavigateBack()}) {
+            }, navigationIcon = {
+                IconButton(modifier = Modifier.then(Modifier.size(24.dp)),
+                    onClick = { filterViewModel.appNavigator.tryNavigateBack() }) {
                     Icon(
-                        Icons.Filled.Close,
-                        "contentDescription",
-                        tint = Color.White)
+                        Icons.Filled.Close, "contentDescription", tint = Color.White
+                    )
                 }
-            },
-            actions = {
+            }, actions = {
                 Button(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    onClick = { filterViewModel.selectedItem.clear()},
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
+                    modifier = Modifier.padding(horizontal = 8.dp), onClick = {
+                        filterViewModel.onResetBtnClick()
+                    }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
                 ) {
                     Text(text = "RESET")
                 }
             })
 
             Surface(modifier = Modifier.fillMaxSize(1f)) {
-            Column(
-                modifier = Modifier.padding(10.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                Column(
+                    modifier = Modifier.padding(10.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
 
-                ChipSection(filterViewModel)
+                    ChipSection(filterViewModel)
 
-                Button(
-                    modifier = Modifier.fillMaxWidth(1f)
-                        .height(height = 64.dp),
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth(1f)
+                            .height(height = 64.dp),
 
-                    onClick = {
-                        filterViewModel.appNavigator.tryNavigateBack()
-                         baseViewModel.changeToLeadDetailsArg.addAll(filterViewModel.selectedItem)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color(0xffFF0303)
-                    )
-                ) {
-                    Text(text = "Apply Filters", style = TextStyle(color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.W700))
+                        onClick = {
+                            filterViewModel.appNavigator.tryNavigateBack()
+                            baseViewModel.changeToLeadDetailsArg.addAll(filterViewModel.selectedItem)
+                        }, colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xffFF0303)
+                        )
+                    ) {
+                        Text(
+                            text = "Apply Filters", style = TextStyle(
+                                color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.W700
+                            )
+                        )
+                    }
                 }
             }
         }
 
-
-        }
-
     }
-
 
 }
 
@@ -115,20 +114,40 @@ fun FilterScreen(
 fun ChipSection(
     filterViewModel: FilterViewModel
 ) {
+
+
+    val mContext = LocalContext.current
+
+    val mYear: Int
+    val mMonth: Int
+    val mDay: Int
+
+    val mCalendar = Calendar.getInstance()
+
+    mYear = mCalendar.get(Calendar.YEAR)
+    mMonth = mCalendar.get(Calendar.MONTH)
+    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+
+
+    val mDatePickerDialog = DatePickerDialog(
+        mContext, { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+            filterViewModel.onSelectCustomData("$mDayOfMonth/${mMonth + 1}/$mYear")
+        }, mYear, mMonth, mDay
+    )
+
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         filterViewModel.filterDetails.collectAsState().value?.apply {
             Text(
-                text = "Data Lead added",
-                style = TextStyle(
-                fontWeight = FontWeight.W500,
-                fontSize = 18.sp
-            ))
+                text = "Data Lead added", style = TextStyle(
+                    fontWeight = FontWeight.W500, fontSize = 18.sp
+                )
+            )
             LazyVerticalGrid(columns = GridCells.Fixed(3)) {
                 items(dataLead.size) { idx ->
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
                             .clickable {
@@ -140,26 +159,69 @@ fun ChipSection(
                                     0xffDDDDDD
                                 )
                             )
-                            .padding(10.dp)
-                    ) {
-                        Text(text = dataLead[idx].dataLeadName, style = TextStyle(
-                            fontSize = 14.sp
-                        ))
+                            .padding(10.dp)) {
+                        Text(
+                            text = dataLead[idx].dataLeadName, style = TextStyle(
+                                fontSize = 14.sp
+                            )
+                        )
                     }
                 }
             }
 
-            Text(
-                text = "Labels",
-                style = TextStyle(
-                    fontWeight = FontWeight.W500,
-                    fontSize = 18.sp
-                ))
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            LazyVerticalGrid(columns = GridCells.Fixed(3),){
-                items(dataLabel.size){idx ->
-                    Box(
-                        contentAlignment = Alignment.Center,
+                if (filterViewModel.selectedDate.value != null) {
+                    Text(
+                        modifier = Modifier
+
+                            .padding(
+                                vertical = 3.dp, horizontal = 5.dp
+                            ),
+                        text = filterViewModel.selectedDate.value!!.dataLeadName,
+                        style = TextStyle(
+                            color = Color(0xff1AB1B0),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                    )
+                } else {
+                    Text(
+                        modifier = Modifier.padding(
+                            vertical = 3.dp, horizontal = 5.dp
+                        ),
+                        text = "Custom Date",
+                        style = TextStyle(
+                            color = Color(0xff1AB1B0),
+                            fontSize = 16.sp,
+
+                            ),
+                    )
+                }
+                IconButton(
+
+                    onClick = {
+                        mDatePickerDialog.show()
+                    }) {
+                    Icon(
+                        painter = R.drawable.sdate.resourceImage(), contentDescription = null
+                    )
+                }
+            }
+
+
+            Text(
+                text = "Labels", style = TextStyle(
+                    fontWeight = FontWeight.W500, fontSize = 18.sp
+                )
+            )
+
+            LazyVerticalGrid(columns = GridCells.Fixed(3)) {
+                items(dataLabel.size) { idx ->
+                    Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
                             .clickable {
@@ -173,28 +235,28 @@ fun ChipSection(
                             )
                             .padding(10.dp)
 
-                        ) {
-                        Text(text = dataLabel[idx].labelName, style = TextStyle(
-                            fontSize = 14.sp
-                        ))
+                    ) {
+                        Text(
+                            text = dataLabel[idx].labelName, style = TextStyle(
+                                fontSize = 14.sp
+                            )
+                        )
                     }
 
                 }
             }
 
             Text(
-                text = "Status",
-                style = TextStyle(
-                    fontWeight = FontWeight.W500,
-                    fontSize = 18.sp
-                ))
+                text = "Status", style = TextStyle(
+                    fontWeight = FontWeight.W500, fontSize = 18.sp
+                )
+            )
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3)
-            ){
-              items(dataStatus.size){idx ->
-                    Box(
-                        contentAlignment = Alignment.Center,
+            ) {
+                items(dataStatus.size) { idx ->
+                    Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
                             .clickable {
@@ -208,26 +270,26 @@ fun ChipSection(
                             )
                             .padding(10.dp)
 
-                    ){
-                        Text(text = dataStatus[idx].statusName, style = TextStyle(
-                            fontSize = 14.sp
-                        ))
+                    ) {
+                        Text(
+                            text = dataStatus[idx].statusName, style = TextStyle(
+                                fontSize = 14.sp
+                            )
+                        )
                     }
                 }
             }
             Text(
-                text = "Source",
-                style = TextStyle(
-                    fontWeight = FontWeight.W500,
-                    fontSize = 18.sp
-                ))
+                text = "Source", style = TextStyle(
+                    fontWeight = FontWeight.W500, fontSize = 18.sp
+                )
+            )
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3)
-            ){
-                items(dataSource.size){idx ->
-                    Box(
-                        contentAlignment = Alignment.Center,
+            ) {
+                items(dataSource.size) { idx ->
+                    Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
                             .clickable {
@@ -241,10 +303,11 @@ fun ChipSection(
                             )
                             .padding(10.dp)
 
-                    ){
-                        Text(text = dataSource[idx].dataSourceName, style = TextStyle(
-                            fontSize = 14.sp
-                        )
+                    ) {
+                        Text(
+                            text = dataSource[idx].dataSourceName, style = TextStyle(
+                                fontSize = 14.sp
+                            )
                         )
                     }
                 }
@@ -253,18 +316,16 @@ fun ChipSection(
 
 
             Text(
-                text = "Team Member",
-                style = TextStyle(
-                    fontWeight = FontWeight.W500,
-                    fontSize = 18.sp
-                ))
+                text = "Team Member", style = TextStyle(
+                    fontWeight = FontWeight.W500, fontSize = 18.sp
+                )
+            )
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3)
-            ){
-                items(teamMember.size){idx ->
-                    Box(
-                        contentAlignment = Alignment.Center,
+            ) {
+                items(teamMember.size) { idx ->
+                    Box(contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
                             .clickable {
@@ -278,15 +339,15 @@ fun ChipSection(
                             )
                             .padding(10.dp)
 
-                    ){
-                        Text(text = teamMember[idx].teamMemberName, style = TextStyle(
-                            fontSize = 14.sp
-                        ))
+                    ) {
+                        Text(
+                            text = teamMember[idx].teamMemberName, style = TextStyle(
+                                fontSize = 14.sp
+                            )
+                        )
                     }
                 }
             }
-
-        
 
 
         }

@@ -63,7 +63,9 @@ fun DashboardScreen(
 fun ColumnScope.CalenderSection(
     viewModel: DashboardViewModel) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(start = 7.5.dp, end = 7.5.dp, bottom = 10.dp, top = 1.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 7.5.dp, end = 7.5.dp, bottom = 10.dp, top = 1.dp)
     ) {
         AndroidView(factory = {CalendarView(it)},
             modifier = Modifier.weight(1f),
@@ -90,7 +92,18 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
             .padding(horizontal = 20.dp, vertical = 10.dp),
     ) {
         Row(modifier = Modifier.weight(1f)) {
-            Image(
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(dashboardViewModel.shortDetail.value?.userImage)
+                    .decoderFactory(SvgDecoder.Factory())
+                    .crossfade(enable = true)
+                    .error(R.drawable.gslogo)
+                    .size(150)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.clip(CircleShape)
+            )
+           /* Image(
                 painter = R.drawable.profile.resourceImage(),
                 contentDescription = "avatar",
                 contentScale = ContentScale.Crop,
@@ -98,7 +111,7 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
                     .size(50.dp)
                     .clip(CircleShape)
                     .border(2.dp, Color.Gray, CircleShape)
-            )
+            )*/
             Column(
                 verticalArrangement = Arrangement.Center
             ) {

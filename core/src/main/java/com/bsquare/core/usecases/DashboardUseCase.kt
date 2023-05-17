@@ -37,4 +37,31 @@ class DashboardUseCase @Inject constructor(
 
 
 
+    fun getUserDetail() = flow<Data>{
+        emit(Data(EmitType.Loading, value= true))
+        when(val response = repository.getUserDetails(prefs.userId())){
+            is Resource.Success ->{
+                emit(Data(EmitType.Loading, false))
+                response.data?.apply {
+                    when(status){
+                        true ->{
+                            emit(Data(type = EmitType.userDetails, value = this.shortDetails))
+                        }
+
+                        else -> {
+                            emit(Data(EmitType.BackendError, message))
+                        }
+                    }
+                }
+            }
+
+            is Resource.Error -> {
+                emit(Data(EmitType.Loading, false))
+            }
+            else -> {}
+        }
+    }
+
+
+
 }

@@ -31,6 +31,7 @@ class FilterViewModel @Inject constructor(
     val selectedDate =  mutableStateOf<DataLead?>(null)
 
     val loader = mutableStateOf(false)
+
     val errorToast = mutableStateOf("")
 
     init {
@@ -40,9 +41,11 @@ class FilterViewModel @Inject constructor(
     fun filterData() {
         useCase.FilterInitialData().onEach {
             when (it.type) {
+
                 EmitType.Loading ->{
                     it.value.apply {
                         castValueToRequiredTypes<Boolean>()?.let {
+                            Log.d("messsage", "filterData: $it")
                             loader.value = it
                         }
                     }

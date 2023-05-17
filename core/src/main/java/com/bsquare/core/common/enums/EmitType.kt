@@ -21,4 +21,5 @@ enum class EmitType {
     TaskDetailData,
     getResponse,
     leadFilterDetails,
+    userDetails,
 }

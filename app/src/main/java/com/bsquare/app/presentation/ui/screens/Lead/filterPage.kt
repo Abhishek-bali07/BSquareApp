@@ -52,7 +52,6 @@ fun FilterScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-
             TopAppBar(backgroundColor = Color(0xffDDDDDD), elevation = 2.dp, title = {
                 Text(
                     "Filter", modifier = Modifier.fillMaxWidth(), style = TextStyle(
@@ -76,34 +75,50 @@ fun FilterScreen(
                 }
             })
 
-            Surface(modifier = Modifier.fillMaxSize(1f)) {
-                Column(
-                    modifier = Modifier.padding(10.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
+            if(filterViewModel.loader.value){
+                Log.d("message", "FilterScreen: ${filterViewModel.loader.value} ")
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(bottom = 5.dp),
+                    color = Color.Black,
+                    strokeWidth = 5.dp
+                )
+            }else{
 
-                    ChipSection(filterViewModel)
-
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth(1f)
-                            .height(height = 64.dp),
-
-                        onClick = {
-                            filterViewModel.appNavigator.tryNavigateBack()
-                            baseViewModel.changeToLeadDetailsArg.addAll(filterViewModel.selectedItem)
-                        }, colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xffFF0303)
-                        )
+                Surface(modifier = Modifier.fillMaxSize(1f)) {
+                    Column(
+                        modifier = Modifier.padding(10.dp),
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = "Apply Filters", style = TextStyle(
-                                color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.W700
+
+                        ChipSection(filterViewModel)
+
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth(1f)
+                                .height(height = 64.dp),
+
+                            onClick = {
+                                filterViewModel.appNavigator.tryNavigateBack()
+                                baseViewModel.changeToLeadDetailsArg.addAll(filterViewModel.selectedItem)
+                            }, colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xffFF0303)
                             )
-                        )
+                        ) {
+                            Text(
+                                text = "Apply Filters", style = TextStyle(
+                                    color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.W700
+                                )
+                            )
+                        }
                     }
                 }
+
+
             }
+
+
         }
 
     }

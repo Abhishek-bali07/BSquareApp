@@ -3,11 +3,32 @@ package com.bsquare.app.data.repositories
 import com.bsquare.core.common.constants.Resource
 import com.bsquare.core.domain.repositories.dashboard.DashboardRepository
 import com.bsquare.core.entities.Feature
+import com.bsquare.core.entities.ShortDetails
 import com.bsquare.core.entities.responses.FeaturesResponse
+import com.bsquare.core.entities.responses.userDetailResponse
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
+    override suspend fun getUserDetails(
+        userId: String
+    ): Resource<userDetailResponse> {
+        delay(2000L)
+        return Resource.Success(
+            userDetailResponse(
+                status = true,
+                message = "Success",
+                shortDetails = ShortDetails(
+                    userName = "Abhishek B",
+                    userImage = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                    userNumber = "8885552222"
+
+                )
+
+            )
+        )
+    }
+
     override suspend fun seefeatures(
         userId: String,
         selectedDate: String

@@ -4,6 +4,7 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castListToRequiredTypes
+import com.bsquare.app.presentation.states.castValueToRequiredTypes
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.Feature
@@ -24,10 +25,14 @@ class DashboardViewModel @Inject constructor(
 ) : ViewModel() {
 
    var date by mutableStateOf("")
+
+
     val shortDetail = mutableStateOf<ShortDetails?>(null)
+
     val features = mutableStateListOf<Feature>()
     init {
         getFeatureData()
+        getUserData()
     }
     fun onBoxClicked(feature: Feature) {
         feature.feature_Id.let {
@@ -67,6 +72,20 @@ class DashboardViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
+
+    fun getUserData(){
+        useCase.getUserDetail().onEach {
+            when(it.type){
+                EmitType.userDetails ->{
+                    it.value?.castValueToRequiredTypes<ShortDetails>()?.let {
+                        shortDetail.value = it
+                    }
+                }
+
+                else -> {}
+            }
+        }.launchIn(viewModelScope)
+    }
 
 
   /*  fun signOut() {

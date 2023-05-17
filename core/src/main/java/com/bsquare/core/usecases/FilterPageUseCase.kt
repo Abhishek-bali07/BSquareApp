@@ -18,6 +18,7 @@ class FilterPageUseCase @Inject constructor(
 ) {
     fun FilterInitialData() = flow<Data>{
         emit(Data(EmitType.Loading, value = true))
+
         when(val response = repository.getInitialData(prefs.userId())){
             is Resource.Success -> {
                 emit(Data(EmitType.Loading, false))

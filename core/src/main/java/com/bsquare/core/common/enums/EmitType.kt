@@ -22,4 +22,5 @@ enum class EmitType {
     getResponse,
     leadFilterDetails,
     userDetails,
+    AddActivityDetails,
 }

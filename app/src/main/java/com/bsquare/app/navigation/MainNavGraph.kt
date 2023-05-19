@@ -6,10 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.bsquare.app.navigation.screen_transitions.AppScreenTransitions
-import com.bsquare.app.presentation.ui.screens.Lead.AddLeadScreen
-import com.bsquare.app.presentation.ui.screens.Lead.CompanyDetailScreen
-import com.bsquare.app.presentation.ui.screens.Lead.FilterScreen
-import com.bsquare.app.presentation.ui.screens.Lead.LeadScreen
+import com.bsquare.app.presentation.ui.screens.Lead.*
 import com.bsquare.app.presentation.ui.screens.dashboard.DashboardScreen
 import com.bsquare.app.presentation.ui.screens.followup.AddTaskScreen
 import com.bsquare.app.presentation.ui.screens.followup.FollowupScreen
@@ -31,7 +28,7 @@ fun MainNavGraph(
     navHostController.NavEffects(navigationChannel)
     AppNavHost(
             navController = navHostController,
-            startDestination = Destination.DashboardScreen,
+            startDestination = Destination.AddActivityScreen,
             modifier = Modifier.padding(paddingValues),
             enterTransition = AppScreenTransitions.ScreenEnterTransition,
             popEnterTransition = AppScreenTransitions.ScreenPopEnterTransition,
@@ -68,6 +65,10 @@ fun MainNavGraph(
 
         composable(destination = Destination.AddTaskScreen){
             AddTaskScreen(baseViewModel = baseViewModel)
+        }
+
+        composable(destination = Destination.AddActivityScreen){
+            AddActivityScreen()
         }
 
     }

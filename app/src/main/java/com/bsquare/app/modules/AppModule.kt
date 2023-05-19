@@ -10,10 +10,7 @@ import com.bsquare.core.domain.repositories.dashboard.DashboardRepository
 import com.bsquare.core.domain.repositories.followup.AddTaskRepository
 import com.bsquare.core.domain.repositories.followup.FollowupRepository
 import com.bsquare.core.domain.repositories.intro.SplashRepository
-import com.bsquare.core.domain.repositories.lead.AddLeadRepository
-import com.bsquare.core.domain.repositories.lead.CompanyDetailsRepository
-import com.bsquare.core.domain.repositories.lead.FilterPageRepository
-import com.bsquare.core.domain.repositories.lead.LeadRepository
+import com.bsquare.core.domain.repositories.lead.*
 import com.bsquare.core.domain.repositories.login.LoginRepository
 import com.bsquare.core.utils.helper.AppStore
 import dagger.Binds
@@ -77,4 +74,8 @@ interface AppModule {
 
     @Binds
     fun bindFilterRepository(repo:FilterRepositoryImpl) : FilterPageRepository
+
+
+    @Binds
+    fun  bindAddActivityRepository(repo: AddActivityRepositoryImpl) : AddActivityRepository
 }

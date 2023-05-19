@@ -10,4 +10,5 @@ object AppRoutes {
     const val ADDLEAD = "add lead"
     const val FOLLOW = "follow up"
     const val  ADDTASK = "add task"
+    const val ADDACTIVITY = "add activity"
 }

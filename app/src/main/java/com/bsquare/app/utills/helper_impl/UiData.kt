@@ -6,6 +6,8 @@ enum class UiData {
     LoginContinueBtnEnable,
     LoginApiLoading,
     AddNewClientBtnEnable,
+    AddActivityBtnEnable,
+    AddActivityLoading,
     NewClientApiLoading,
     DrawerGuestureState,
     e,

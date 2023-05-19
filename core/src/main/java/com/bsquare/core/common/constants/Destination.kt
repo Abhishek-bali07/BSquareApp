@@ -45,6 +45,9 @@ sealed class Destination(
  object AddTaskScreen: NoArgumentsDestination(AppRoutes.ADDTASK)
 
 
+ object AddActivityScreen: NoArgumentsDestination(AppRoutes.ADDACTIVITY)
+
+
 }
 
 

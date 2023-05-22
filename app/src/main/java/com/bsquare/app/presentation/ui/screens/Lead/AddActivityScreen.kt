@@ -5,12 +5,14 @@ import android.app.TimePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -67,13 +69,15 @@ fun AddActivityScreen(
 
                 })
 
+
+
             AddActivitySection(addActivityViewModel)
 
 
             AppButton(
                 enable = addActivityViewModel.enableBtn.value,
                 loading = addActivityViewModel.addLoading.value,
-                action = { /*TODO*/ },
+                action = addActivityViewModel::newActivity,
                 name = R.string.add_now)
 
 
@@ -83,6 +87,7 @@ fun AddActivityScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddActivitySection(
     addActivityViewModel: AddActivityViewModel
@@ -344,7 +349,6 @@ fun AddActivitySection(
                                 style = TextStyle(
                                     color = Color(0xff212121),
                                     fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
                                 ),
                             )
                         }else{
@@ -483,41 +487,56 @@ fun AddActivitySection(
                     .size(height = 65.dp, width = 300.dp),
                 value = addActivityViewModel.activityNote.value,
                 placeholder = { Text(text = "Enter Notes") },
-                onValueChange = addActivityViewModel::onChangeCompanyName,
+                onValueChange = addActivityViewModel::onChangeNote,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xff666666),
                     unfocusedBorderColor = Color(0xff666666)
                 )
             )
 
+            val noteDetails = addActivityViewModel.noteDetails.collectAsState()
 
-//            LazyVerticalGrid(columns = GridCells.Fixed(3)) {
-//                items(dataLead.size) { idx ->
-//                    Box(contentAlignment = Alignment.Center,
-//                        modifier = Modifier
-//                            .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
-//                            .clickable {
-//                                filterViewModel.onClickDataLeadChip(idx)
-//                            }
-//                            .clip(RoundedCornerShape(25.dp))
-//                            .background(
-//                                color = if (dataLead[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
-//                                    0xffDDDDDD
-//                                )
-//                            )
-//                            .padding(10.dp)) {
-//                        Text(
-//                            text = dataLead[idx].dataLeadName, style = TextStyle(
-//                                fontSize = 14.sp
-//                            )
-//                        )
-//                    }
-//                }
-//            }
+            LazyRow {
+                noteDetails.value?.notes?.size?.let {
+                    items(it) {idx->
+                        Surface(
+                            color = Color(android.graphics.Color.parseColor(noteDetails.value!!.notes[idx].bgColor)),
+                            modifier = Modifier
+                                .padding(start = 15.dp, top = 15.dp, bottom = 15.dp)
+                                .clickable {
+
+                                    if(addActivityViewModel.activityNote.value.isEmpty()){
+                                        addActivityViewModel.onClickDataChip(idx)
+                                    }
+                                }
+                                .clip(RoundedCornerShape(18.dp))
+                                .background(
+                                    color = Color(android.graphics.Color.parseColor(noteDetails.value!!.notes[idx].bgColor)),
+                                )
+                                .padding(12.dp)
+
+
+                        ) {
+                            Text(
+                                text = addActivityViewModel.noteDetails.collectAsState().value?.notes!![idx].notesName,
+                                style =if(addActivityViewModel.noteDetails.collectAsState().value?.notes!![idx].isSelected)
+                                    TextStyle(
+                                    fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White
+                                ) else  TextStyle(
+                                    fontSize = 14.sp
+                                )
+                            )
+                        }
+                    }
+                }
+                }
+            }
+
+
+
 
 
         }
 
     }
 
-}

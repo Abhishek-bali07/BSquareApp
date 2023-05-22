@@ -23,4 +23,6 @@ enum class EmitType {
     leadFilterDetails,
     userDetails,
     AddActivityDetails,
+    AddNotesDetails,
+    addActivity,
 }

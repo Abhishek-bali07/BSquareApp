@@ -86,9 +86,8 @@ fun LoginScreen(
     loginViewModel.toastNotify.ComposeLaunchEffect(
         intentionalCode = { message ->
             scaffoldState.snackbarHostState.showSnackbar(message)
-        },
-        clearance = { "" }
-    )
+        }
+    ) { "" }
 }
 
 @Composable

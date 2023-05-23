@@ -1,5 +1,6 @@
 package com.bsquare.core.utils.helper
 
+import com.bsquare.core.common.constants.Destination
 import kotlinx.coroutines.channels.Channel
 
 sealed class  NavigationIntent{

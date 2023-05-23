@@ -1,5 +1,6 @@
 package com.bsquare.app.navigation
 
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.utils.helper.AppNavigator
 import com.bsquare.core.utils.helper.NavigationIntent
 import kotlinx.coroutines.channels.BufferOverflow

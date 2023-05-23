@@ -10,7 +10,9 @@ import com.bsquare.app.utills.helper_impl.SavableMutableState
 import com.bsquare.app.utills.helper_impl.UiData
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
+import com.bsquare.core.common.enums.NoteTakenBy
 import com.bsquare.core.entities.ActivityDetailData
+import com.bsquare.core.entities.ActivityDetails
 import com.bsquare.core.entities.ActivityNotesDetails
 import com.bsquare.core.usecases.AddActivityUseCase
 import com.bsquare.core.utils.helper.AppNavigator
@@ -42,8 +44,12 @@ class AddActivityViewModel @Inject constructor(
 
     val isMenuExpanded = mutableStateOf(false)
 
+    val noteItem = mutableStateOf<NoteTakenBy?>(null)
+
 
     val activitylistDetail = mutableStateOf<ActivityDetailData?>(null)
+
+    val updateActivityList = mutableStateOf<ActivityDetails?>(null)
 
 
     private  val _noteDetails = MutableStateFlow<ActivityNotesDetails?>(null)
@@ -64,7 +70,8 @@ class AddActivityViewModel @Inject constructor(
     }
 
     fun onChangeNote(cn: String) {
-       activityNote.value = cn
+        noteItem.value = NoteTakenBy.TEXTFIELD
+        activityNote.value = cn
     }
 
 
@@ -107,6 +114,9 @@ class AddActivityViewModel @Inject constructor(
     }
 
 
+
+
+
     private fun  initialData(){
         useCase.InitialDetails().onEach {
             when(it.type){
@@ -142,25 +152,30 @@ class AddActivityViewModel @Inject constructor(
 
 
     fun onClickDataChip(selectedIdx: Int){
+        noteItem.value = NoteTakenBy.SUGGESTION
         _noteDetails.update { data ->
             data?.notes?.map {
                 if (selectedIdx == data.notes.indexOf(it)){
-                    val  selected = it.copy(isSelected = !it.isSelected)
-                    if (selected.isSelected){
-
-                        selectedItem.add(selected.notesId)
-                    }else{
-                        if (selectedItem.contains(selected.notesId)){
-                            selectedItem.remove(selected.notesId)
-                        }
+                    val selected = it.copy(isSelected = !it.isSelected)
+                    if (selected.isSelected) {
+                        activityNote.value = selected.notesName
                     }
                     return@map selected
                 }
                 it
             }?.toList()?.let { data.copy(notes = it) }
-
         }
+    }
 
+
+    fun resetNoteItem(){
+        _noteDetails.update {
+            val  updateData = it?.notes?.map {
+                it.copy(isSelected = false)
+            }
+            ActivityNotesDetails(notes = updateData!!)
+        }
+        activityNote.value = ""
     }
 
 
@@ -175,8 +190,6 @@ class AddActivityViewModel @Inject constructor(
             activityTime = selectedTime.value,
             phoneNumber = alterPhn.value
         ).onEach {
-
-
             when(it.type){
                 EmitType.Loading -> {
                     it.value?.apply {
@@ -187,8 +200,9 @@ class AddActivityViewModel @Inject constructor(
                 }
                 EmitType.Navigate -> {
                     it.value?.apply {
-                        castValueToRequiredTypes<Destination>()?.let { destination ->
-                            appNavigator.tryNavigateBack()
+                        castValueToRequiredTypes<ActivityDetails>()?.let { data ->
+                           // appNavigator.tryNavigateBack()
+                            updateActivityList.value = data
                         }
                     }
                 }

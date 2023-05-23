@@ -33,6 +33,7 @@ import com.bsquare.app.presentation.ui.custom_composable.AddNote
 import com.bsquare.app.presentation.ui.custom_composable.AddTask
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
 import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
+import com.bsquare.core.utils.helper.AppNavigator
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
@@ -79,7 +80,7 @@ fun CompanyDetailScreen(
             })
             CompanyTypeSection(companyDetailViewModel,baseViewModel)
             CompanyDetailSection(companyDetailViewModel)
-            TabBarSection(companyDetailViewModel)
+            TabBarSection(companyDetailViewModel,baseViewModel)
 
 
         }
@@ -94,13 +95,13 @@ fun CompanyDetailScreen(
         if (it.isNotEmpty()) {
             companyDetailViewModel.initialData(it)
         }
-    }, clearance = { "" })
+    }) { "" }
 
 }
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
-fun ColumnScope.TabBarSection(companyDetailViewModel: CompanyDetailViewModel) {
+fun ColumnScope.TabBarSection(companyDetailViewModel: CompanyDetailViewModel,baseViewModel: BaseViewModel) {
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
@@ -143,7 +144,7 @@ fun ColumnScope.TabBarSection(companyDetailViewModel: CompanyDetailViewModel) {
         ) { page ->
             when (page) {
                 0 -> {
-                   AddActivity(companyDetailViewModel,page)
+                   AddActivity(companyDetailViewModel,page, baseViewModel.addedActivityArg)
                 }
                 1 -> {
                     // add task

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,14 +19,19 @@ import androidx.compose.ui.unit.sp
 import com.bsquare.app.R
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.view_models.CompanyDetailViewModel
+import com.bsquare.core.common.constants.Destination
+import com.bsquare.core.entities.ActivityDetails
+import com.bsquare.core.utils.helper.AppNavigator
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddActivity(
     companyDetailViewModel: CompanyDetailViewModel,
-      tabInt: Int
-) {
+    tabInt: Int,
+    addedActivityArg: SnapshotStateList<ActivityDetails?>,
+
+    ) {
 
     Column(
         modifier = Modifier
@@ -46,7 +52,8 @@ fun AddActivity(
                 .clip(RoundedCornerShape(25.dp))
                 .background(color = Color(0xffEF2424)),
                 onClick = {
-                    companyDetailViewModel.addActivity(companyDetailViewModel.writenActivity.value, tabId = tabInt.toString())
+                   companyDetailViewModel.onAddActivity()
+
                 }) {
                 Row(
                     modifier = Modifier.background(color =  Color(0xffEF2424)),
@@ -77,26 +84,25 @@ fun AddActivity(
         }
 
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp)
-                .size(height = 100.dp, width = 300.dp),
-            value = companyDetailViewModel.writenActivity.value,
-            onValueChange = companyDetailViewModel::onChangeActivity,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.LightGray,
-                unfocusedBorderColor = Color.Black
-            )
-        )
+//        OutlinedTextField(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 20.dp)
+//                .size(height = 100.dp, width = 300.dp),
+//            value = companyDetailViewModel.writenActivity.value,
+//            onValueChange = companyDetailViewModel::onChangeActivity,
+//            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                focusedBorderColor = Color.LightGray,
+//                unfocusedBorderColor = Color.Black
+//            )
+//        )
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-//            if(companyDetailViewModel.writenActivity.value.isNotEmpty())
-                items(companyDetailViewModel.addedActivities) { item ->
+                items(addedActivityArg) { item ->
                     Card(
                         modifier = Modifier
                             .wrapContentSize()
@@ -104,8 +110,14 @@ fun AddActivity(
                     ) {
 
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(text = item)
-                            IconButton(onClick = { companyDetailViewModel.removeActivity(item, tabId = tabInt.toString()) }) {
+                            if (item != null) {
+                                Text(text = item.activityFor)
+                            }
+                            IconButton(onClick = {
+                                if (item != null) {
+                                    companyDetailViewModel.removeActivity(item.activityFor, tabId = tabInt.toString())
+                                }
+                            }) {
                                 Icon(
                                     painter = R.drawable.mcircle.resourceImage(),
                                     contentDescription = null

@@ -43,11 +43,9 @@ import com.bsquare.app.R
 import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.states.Dialog
 import com.bsquare.app.presentation.states.resourceImage
-import com.bsquare.app.presentation.ui.custom_composable.AppButton
 import com.bsquare.app.presentation.ui.custom_composable.MobileNumberInputField
 import com.bsquare.app.presentation.ui.custom_composable.StrickyButton
 import com.bsquare.app.presentation.ui.custom_composable.requestPermissionComposable
-import com.bsquare.app.presentation.ui.screens.login.MobileInputTextField
 import com.bsquare.app.presentation.ui.view_models.AddLeadViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -445,9 +443,8 @@ fun Effects(addLeadViewModel: AddLeadViewModel) {
                     context.startActivity(appSettingIntent)
                 }
             }
-        },
-        clearance = { null }
-    )
+        }
+    ) { null }
 
 
 }

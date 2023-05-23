@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,14 +24,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bsquare.app.R
+import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.custom_composable.AppButton
 import com.bsquare.app.presentation.ui.view_models.AddActivityViewModel
+import com.bsquare.app.presentation.ui.view_models.BaseViewModel
+import com.bsquare.core.common.enums.NoteTakenBy
 import java.util.*
 
 @Composable
 fun AddActivityScreen(
-    addActivityViewModel: AddActivityViewModel = hiltViewModel()
+    addActivityViewModel: AddActivityViewModel = hiltViewModel(),
+    baseViewModel: BaseViewModel
+
 ){
     val scaffoldState = rememberScaffoldState()
     val scrollState = rememberScrollState()
@@ -85,6 +91,31 @@ fun AddActivityScreen(
         }
 
     }
+
+    /////////////////////
+
+   LaunchedEffect(key1 = addActivityViewModel.noteItem){
+
+
+       if(addActivityViewModel.noteItem.value == NoteTakenBy.SUGGESTION){
+                addActivityViewModel.activityNote.value == ""
+       }else{
+           if (addActivityViewModel.noteItem.value == NoteTakenBy.TEXTFIELD){
+           addActivityViewModel.resetNoteItem()
+           }
+       }
+   }
+
+    addActivityViewModel.updateActivityList.ComposeLaunchEffect(intentionalCode = {
+      if (it!= null){
+          baseViewModel.addedActivityArg.add(it)
+          addActivityViewModel.appNavigator.tryNavigateBack()
+      }
+    }) {
+        null
+    }
+
+
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -154,6 +185,7 @@ fun AddActivitySection(
                 Surface(
                     modifier = Modifier
                         .width(screenWidthDp * .90f)
+                        .height(55.dp)
                         .background(color = Color(0xffDDDDDD)),
                     border = BorderStroke(1.dp, Color(0xff666666)),
 
@@ -230,7 +262,7 @@ fun AddActivitySection(
 
 
             Text(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                 text = "Activity Type", style = TextStyle(fontWeight = FontWeight.W500),
                 textAlign = TextAlign.Start
             )
@@ -244,6 +276,7 @@ fun AddActivitySection(
                 Surface(
                     modifier = Modifier
                         .width(screenWidthDp * .90f)
+                        .height(55.dp)
                         .background(color = Color(0xffDDDDDD)),
                     border = BorderStroke(1.dp, Color(0xff666666)),
 
@@ -317,7 +350,7 @@ fun AddActivitySection(
 
 
             Text(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                 text = "Activity Date", style = TextStyle(fontWeight = FontWeight.W500),
                 textAlign = TextAlign.Start
             )
@@ -328,7 +361,8 @@ fun AddActivitySection(
             ){
                 Surface(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .width(screenWidthDp * .95f)
+                        .height(55.dp)
                         .padding(horizontal = 10.dp)
                         .background(color = Color(0xffDDDDDD)),
                     border = BorderStroke(1.dp, Color(0xff666666)),
@@ -379,7 +413,7 @@ fun AddActivitySection(
 
 
             Text(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                 text = "Alternate Phone Number", style = TextStyle(fontWeight = FontWeight.W500),
                 textAlign = TextAlign.Start
             )
@@ -390,7 +424,11 @@ fun AddActivitySection(
                     .padding(vertical = 10.dp, horizontal = 10.dp)
                     .size(height = 55.dp, width = 300.dp),
                 value = addActivityViewModel.alterPhn.value,
-                placeholder = { Text(text = "Enter Alternate Number") },
+                placeholder = { Text(text = "Enter Alternate Number", style = TextStyle(
+                    color = Color.LightGray,
+                    fontSize = 16.sp,
+
+                )) },
                 onValueChange = addActivityViewModel::onChangeAlterPhn,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xff666666),
@@ -405,7 +443,8 @@ fun AddActivitySection(
             )
             Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .width(screenWidthDp * .95f)
+                    .height(55.dp)
                     .padding(horizontal = 10.dp)
                     .background(color = Color(0xffDDDDDD)),
                 border = BorderStroke(1.dp, Color(0xff666666)),
@@ -455,7 +494,7 @@ fun AddActivitySection(
             }
 
             Text(
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                 text = "Company Name", style = TextStyle(fontWeight = FontWeight.W500),
                 textAlign = TextAlign.Start
             )
@@ -466,7 +505,11 @@ fun AddActivitySection(
                     .padding(vertical = 10.dp, horizontal = 10.dp)
                     .size(height = 55.dp, width = 300.dp),
                 value = addActivityViewModel.companyName.value,
-                placeholder = { Text(text = "Enter Company Name") },
+                placeholder = { Text(text = "Enter Company Name", style = TextStyle(
+                    color = Color.LightGray,
+                    fontSize = 16.sp,
+
+                    )) },
                 onValueChange = addActivityViewModel::onChangeCompanyName,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xff666666),
@@ -486,7 +529,11 @@ fun AddActivitySection(
                     .padding(vertical = 10.dp, horizontal = 10.dp)
                     .size(height = 65.dp, width = 300.dp),
                 value = addActivityViewModel.activityNote.value,
-                placeholder = { Text(text = "Enter Notes") },
+                placeholder = { Text(text = "Enter Notes", style = TextStyle(
+                    color = Color.LightGray,
+                    fontSize = 16.sp,
+
+                    )) },
                 onValueChange = addActivityViewModel::onChangeNote,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color(0xff666666),
@@ -504,10 +551,7 @@ fun AddActivitySection(
                             modifier = Modifier
                                 .padding(start = 15.dp, top = 15.dp, bottom = 15.dp)
                                 .clickable {
-
-                                    if(addActivityViewModel.activityNote.value.isEmpty()){
-                                        addActivityViewModel.onClickDataChip(idx)
-                                    }
+                                    addActivityViewModel.onClickDataChip(idx)
                                 }
                                 .clip(RoundedCornerShape(18.dp))
                                 .background(
@@ -537,6 +581,7 @@ fun AddActivitySection(
 
 
         }
+
 
     }
 

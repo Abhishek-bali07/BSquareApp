@@ -7,8 +7,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.EnterExitState.*
-import androidx.compose.animation.core.keyframes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,19 +18,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -175,9 +169,9 @@ fun TodayListSection(
             Log.d("testing", "called${leadViewModel.getLeadsData()}")
             leadViewModel.getLeadsData()
         }
-    }, clearance = { false })
+    }) { false }
 
-   LaunchedEffect(key1 = baseViewModel.changeToLeadDetailsArg){
+    LaunchedEffect(key1 = baseViewModel.changeToLeadDetailsArg){
        if(baseViewModel.changeToLeadDetailsArg.isNotEmpty()){
            leadViewModel.getLeadsData()
            baseViewModel.changeToLeadDetailsArg.clear()

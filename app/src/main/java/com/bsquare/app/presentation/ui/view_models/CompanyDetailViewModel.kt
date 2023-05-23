@@ -1,17 +1,12 @@
 package com.bsquare.app.presentation.ui.view_models
 
 import android.util.Log
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castValueToRequiredTypes
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.LeadDetailsData
 import com.bsquare.core.usecases.DetailsUseCase
@@ -19,7 +14,6 @@ import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.lang.reflect.Modifier
 import javax.inject.Inject
 
 
@@ -53,6 +47,9 @@ class CompanyDetailViewModel @Inject constructor(
     val addedNote = mutableStateListOf<String>()
     val addedInfo = mutableStateListOf<String>()
 
+
+
+
     fun onChangeNote(n: String) {
         writenNote.value = n
     }
@@ -69,7 +66,18 @@ class CompanyDetailViewModel @Inject constructor(
         writenActivity.value = a
     }
 
-    fun addActivity(writenActivity: String, tabId: String) {
+    fun onAddActivity(){
+        appNavigator.tryNavigateTo(
+            Destination.AddActivityScreen(),
+            popUpToRoute = null,
+            inclusive = false,
+            isSingleTop = true
+
+        )
+    }
+
+
+/*    fun addActivity(writenActivity: String, tabId: String) {
         this.writenActivity.value = ""
         useCase.addDetails(leadIDArg, text = writenActivity, tabId =  tabId).onEach {
             when(it.type){
@@ -90,7 +98,7 @@ class CompanyDetailViewModel @Inject constructor(
 
         }.launchIn(viewModelScope)
 
-    }
+    }*/
 
     fun removeActivity(wrtitenItem: String, tabId: String) {
        try {

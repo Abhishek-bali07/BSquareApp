@@ -28,7 +28,7 @@ fun MainNavGraph(
     navHostController.NavEffects(navigationChannel)
     AppNavHost(
             navController = navHostController,
-            startDestination = Destination.AddActivityScreen,
+            startDestination = Destination.DashboardScreen,
             modifier = Modifier.padding(paddingValues),
             enterTransition = AppScreenTransitions.ScreenEnterTransition,
             popEnterTransition = AppScreenTransitions.ScreenPopEnterTransition,
@@ -68,7 +68,7 @@ fun MainNavGraph(
         }
 
         composable(destination = Destination.AddActivityScreen){
-            AddActivityScreen()
+            AddActivityScreen(baseViewModel = baseViewModel)
         }
 
     }

@@ -5,6 +5,7 @@ import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.constants.Resource
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.domain.repositories.lead.AddActivityRepository
+import com.bsquare.core.entities.ActivityDetails
 import com.bsquare.core.utils.handleFailedResponse
 import com.bsquare.core.utils.helper.AppStore
 import kotlinx.coroutines.flow.flow
@@ -65,7 +66,8 @@ class AddActivityUseCase  @Inject constructor(
 
                         true ->{
                             emit(Data(type = EmitType.addActivity, message))
-                            emit(Data(type = EmitType.Navigate, Destination.CompanyDetailScreen))
+                            val resUpdate = ActivityDetails(activityFor,activityType,activityDate, phoneNumber, activityTime, companyNames, activityNotes,Destination.CompanyDetailScreen)
+                            emit(Data(type = EmitType.Navigate, resUpdate ))
                         }
                         else -> {
                             emit(Data(EmitType.BackendError, message))

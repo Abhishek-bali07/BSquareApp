@@ -8,7 +8,6 @@ import com.bsquare.app.presentation.states.castValueToRequiredTypes
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.Feature
-import com.bsquare.core.entities.Leads
 import com.bsquare.core.entities.ShortDetails
 import com.bsquare.core.usecases.DashboardUseCase
 import com.bsquare.core.utils.helper.AppNavigator

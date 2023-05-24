@@ -27,7 +27,7 @@ class LeadRepositoryImpl @Inject constructor() : LeadRepository {
                                 typeColor = "#F5CBA7",
                                 leadAmount = "2500",
                                 isNew = true,
-                                companyIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                                companyIconUrl = "https://www.v-xplore.com/dev/rohan/assets/png/user_icon.png",
                                 companyNumber = "9733745623"
                             )
                         }

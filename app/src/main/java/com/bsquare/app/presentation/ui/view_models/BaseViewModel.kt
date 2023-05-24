@@ -23,7 +23,7 @@ class BaseViewModel @Inject constructor(
 
     var refreshLoadDataArg = mutableStateOf(false)
 
-    var addedActivityArg = mutableStateListOf<ActivityDetails?>(null)
+    var addedActivityArg = mutableStateListOf<ActivityDetails?>()
 
 
 

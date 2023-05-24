@@ -20,7 +20,7 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
                 message = "Success",
                 shortDetails = ShortDetails(
                     userName = "Abhishek B",
-                    userImage = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                    userImage = "https://www.v-xplore.com/dev/rohan/assets/png/profile.png",
                     userNumber = "8885552222"
 
                 )
@@ -44,28 +44,28 @@ class DashboardRepositoryImpl @Inject constructor() : DashboardRepository {
                         type = "Meetings",
                         quantity = 25,
                         bgColor = "#03A0E2",
-                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/png/meeting.png",
                     ),
                     Feature(
                         feature_Id = "2",
                         type = "Tasks",
                         quantity = 25,
                         bgColor = "#8576FD",
-                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/png/task-list.png",
                     ),
                     Feature(
                         feature_Id = "3",
                         type = "Follow-up",
                         quantity = 25,
                         bgColor = "#F95A7B",
-                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/png/follow-up.png",
                     ),
                     Feature(
                         feature_Id = "4",
                         type = "Leads",
                         quantity = 20,
                         bgColor = "#1AB1B0",
-                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/meeting.svg",
+                        identityIconUrl = "https://www.v-xplore.com/dev/rohan/assets/png/users.png",
                     )
                 )
 //                feature = MutableList(4) {idx->

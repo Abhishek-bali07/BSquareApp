@@ -100,9 +100,9 @@ class CompanyDetailViewModel @Inject constructor(
 
     }*/
 
-    fun removeActivity(wrtitenItem: String, tabId: String) {
+   /* fun removeActivity(item: String, tabId: String) {
        try {
-            useCase.removeDetails(leadIDArg, text = wrtitenItem, tabId = tabId).onEach {
+            useCase.removeDetails(leadIDArg, text = item, tabId = tabId).onEach {
                 when(it.type){
                     EmitType.Loading -> {
                         it.value?.castValueToRequiredTypes<Boolean>()?.let {
@@ -113,7 +113,7 @@ class CompanyDetailViewModel @Inject constructor(
 
                     EmitType.LeadRemoved -> {
                         it.value?.castValueToRequiredTypes<Boolean>()?.let {
-                            addedActivities.remove(wrtitenItem)
+                            addedActivities.remove(item)
                         }
                     }
 
@@ -125,7 +125,7 @@ class CompanyDetailViewModel @Inject constructor(
             Log.d("TESTING", "EXP ${ex.message}")
         }
 
-    }
+    }*/
 
 
 

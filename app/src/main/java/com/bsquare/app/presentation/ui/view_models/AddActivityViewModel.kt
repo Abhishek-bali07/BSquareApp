@@ -1,6 +1,7 @@
 package com.bsquare.app.presentation.ui.view_models
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -202,6 +203,7 @@ class AddActivityViewModel @Inject constructor(
                     it.value?.apply {
                         castValueToRequiredTypes<ActivityDetails>()?.let { data ->
                            // appNavigator.tryNavigateBack()
+                            Log.d("message", "newActivity:${data} ")
                             updateActivityList.value = data
                         }
                     }
@@ -224,7 +226,7 @@ class AddActivityViewModel @Inject constructor(
                 else -> {}
             }
 
-        }
+        }.launchIn(viewModelScope)
     }
 
 }

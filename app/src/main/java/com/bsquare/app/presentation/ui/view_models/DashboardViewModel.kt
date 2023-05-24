@@ -1,5 +1,6 @@
 package com.bsquare.app.presentation.ui.view_models
 
+import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -77,6 +78,7 @@ class DashboardViewModel @Inject constructor(
             when(it.type){
                 EmitType.userDetails ->{
                     it.value?.castValueToRequiredTypes<ShortDetails>()?.let {
+                        Log.d("message", "getUserData: ${it.userImage}")
                         shortDetail.value = it
                     }
                 }

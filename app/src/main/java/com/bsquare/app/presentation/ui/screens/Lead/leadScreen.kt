@@ -286,13 +286,14 @@ fun LeadDataItem(
         ) {
             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(leadData.companyIconUrl)
-                        .decoderFactory(SvgDecoder.Factory()).build(),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(leadData.companyIconUrl)
+                        .build(),
                     contentDescription = null,
                     modifier = Modifier
                         .size(50.dp)
                         .clip(CircleShape)
-                        .background(color = Color(0xffFF5E00))
+                        .background(color = Color(0xffFF5E09))
                 )
                 Column(
                     verticalArrangement = Arrangement.Center

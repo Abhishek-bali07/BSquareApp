@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
 
@@ -59,8 +58,7 @@ fun FollowupDone(
                         ) {
                             Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.Start) {
                                 AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current).data(item.companyIconUrl)
-                                        .decoderFactory(SvgDecoder.Factory()).build(),
+                                    model = item.companyIconUrl,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .size(50.dp)

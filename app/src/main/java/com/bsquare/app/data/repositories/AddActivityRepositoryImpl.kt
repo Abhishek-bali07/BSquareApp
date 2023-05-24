@@ -106,6 +106,7 @@ class AddActivityRepositoryImpl @Inject constructor() : AddActivityRepository{
         activityNotes: String,
         userId: String
     ): Resource<AddNewActivityResponse> {
-        TODO("Not yet implemented")
+       delay(2000L)
+        return Resource.Success(AddNewActivityResponse(status = true, message = ""))
     }
 }

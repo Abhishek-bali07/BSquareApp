@@ -1,7 +1,8 @@
 package com.bsquare.app.presentation.ui.screens.dashboard
 
 
- import android.widget.CalendarView
+import android.util.Log
+import android.widget.CalendarView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,13 +14,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.simulateHotReload
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 
- import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,12 +31,17 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
+import coil.request.CachePolicy
 import coil.request.ImageRequest
+import coil.size.Size
 import com.bsquare.app.R
- import com.bsquare.app.presentation.states.*
- import com.bsquare.app.presentation.ui.view_models.DashboardViewModel
+import com.bsquare.app.presentation.states.*
+import com.bsquare.app.presentation.ui.activities.MainActivity
+import com.bsquare.app.presentation.ui.view_models.DashboardViewModel
 import com.bsquare.core.entities.Feature
+import kotlinx.coroutines.Dispatchers
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -59,19 +67,21 @@ fun DashboardScreen(
     }
 
 }
+
 @Composable
 fun ColumnScope.CalenderSection(
-    viewModel: DashboardViewModel) {
+    viewModel: DashboardViewModel
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 7.5.dp, end = 7.5.dp, bottom = 10.dp, top = 1.dp)
     ) {
-        AndroidView(factory = {CalendarView(it)},
+        AndroidView(factory = { CalendarView(it) },
             modifier = Modifier.weight(1f),
             update = {
                 it.setOnDateChangeListener { calendarView, year, month, day ->
-                    viewModel.date = "$year - ${month+1}- $day"
+                    viewModel.date = "$year - ${month + 1}- $day"
                     viewModel.getFeatureData()
                 }
             })
@@ -79,10 +89,10 @@ fun ColumnScope.CalenderSection(
 }
 
 
-
-
 @Composable
 fun GreetingSection(dashboardViewModel: DashboardViewModel) {
+
+
     Row(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
@@ -92,18 +102,52 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
             .padding(horizontal = 20.dp, vertical = 10.dp),
     ) {
         Row(modifier = Modifier.weight(1f)) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(dashboardViewModel.shortDetail.value?.userImage)
-                    .decoderFactory(SvgDecoder.Factory())
-                    .crossfade(enable = true)
-                    .error(R.drawable.gslogo)
-                    .size(150)
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier.clip(CircleShape)
-            )
-           /* Image(
+            if (dashboardViewModel.shortDetail.value != null) {
+                dashboardViewModel.shortDetail.value?.apply {
+                    Log.d("TESTING", "GreetingSection: requestedImage $userImage")
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .decoderFactory(SvgDecoder.Factory())
+                            .data(userImage)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .size(Size.ORIGINAL)
+                            .build(), onError = {
+                            Log.d(
+                                "TESTING",
+                                "GreetingSection: data ${it.result.request.data} result ${it.result.throwable}"
+                            )
+                        }, contentDescription = null, modifier = Modifier
+                            .clip(
+                                CircleShape
+                            )
+                            .size(65.dp)
+                    )
+
+                    /*AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data("https://www.v-xplore.com/dev/rohan/assets/jpg/profile.jpg")
+                            .crossfade(true)
+                            .build(),
+                        *//*onError = {
+                            Log.d("message", "GreetingSection: data ${it.result.request} ${it.result.throwable}")
+                        },*//*
+                        contentDescription = null,
+                        modifier = Modifier.clip(CircleShape),
+                        loading = {
+                            CircularProgressIndicator()
+                        },
+                    )*/
+                }
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(65.dp),
+                    color = Color.Black,
+                    strokeWidth = 3.dp
+                )
+            }
+
+
+            /*Image(
                 painter = R.drawable.profile.resourceImage(),
                 contentDescription = "avatar",
                 contentScale = ContentScale.Crop,
@@ -144,6 +188,8 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
                 .size(30.dp)
         )
     }
+
+
 }
 
 
@@ -162,21 +208,26 @@ fun FeatureSection(features: List<Feature>, dashboardViewModel: DashboardViewMod
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-            if (features.isNotEmpty()){
+            if (features.isNotEmpty()) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(start = 7.5.dp, end = 7.5.dp, bottom = 20.dp, top = 10.dp),
+                    contentPadding = PaddingValues(
+                        start = 7.5.dp,
+                        end = 7.5.dp,
+                        bottom = 20.dp,
+                        top = 10.dp
+                    ),
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
 
                 ) {
                     items(features.size) {
-                        FeatureItem(feature = features[it],dashboardViewModel)
+                        FeatureItem(feature = features[it], dashboardViewModel)
                     }
 
                 }
-            }else{
+            } else {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .size(50.dp)
@@ -190,14 +241,13 @@ fun FeatureSection(features: List<Feature>, dashboardViewModel: DashboardViewMod
         }
 
 
-
     }
 }
 
 
 @Composable
 fun FeatureItem(
-    feature: Feature,dashboardViewModel: DashboardViewModel
+    feature: Feature, dashboardViewModel: DashboardViewModel
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -252,7 +302,7 @@ fun FeatureItem(
                     .background(color = Color.White)
                     .align(Alignment.BottomEnd),
                 onClick = {
-                   dashboardViewModel.onBoxClicked(feature)
+                    dashboardViewModel.onBoxClicked(feature)
                 }
             ) {
                 Icon(

@@ -27,8 +27,10 @@ import com.bsquare.app.R
 import com.bsquare.app.presentation.states.ComposeLaunchEffect
 import com.bsquare.app.presentation.states.resourceImage
 import com.bsquare.app.presentation.ui.custom_composable.AppButton
+import com.bsquare.app.presentation.ui.custom_composable.MobileNumberInputField
 import com.bsquare.app.presentation.ui.view_models.AddActivityViewModel
 import com.bsquare.app.presentation.ui.view_models.BaseViewModel
+import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.NoteTakenBy
 import java.util.*
 
@@ -111,9 +113,7 @@ fun AddActivityScreen(
           baseViewModel.addedActivityArg.add(it)
           addActivityViewModel.appNavigator.tryNavigateBack()
       }
-    }) {
-        null
-    }
+    }) { null }
 
 
 }
@@ -417,8 +417,18 @@ fun AddActivitySection(
                 text = "Alternate Phone Number", style = TextStyle(fontWeight = FontWeight.W500),
                 textAlign = TextAlign.Start
             )
+            MobileNumberInputField(
+                onNumberChange = addActivityViewModel::onChangeAlterPhn,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
+                    .size(height = 55.dp, width = 300.dp),
+                textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color(0xff666666),
+                    unfocusedBorderColor = Color(0xff666666)
+                ))
 
-            OutlinedTextField(
+            /*OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 10.dp, horizontal = 10.dp)
@@ -434,7 +444,7 @@ fun AddActivitySection(
                     focusedBorderColor = Color(0xff666666),
                     unfocusedBorderColor = Color(0xff666666)
                 )
-            )
+            )*/
 
             Text(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),

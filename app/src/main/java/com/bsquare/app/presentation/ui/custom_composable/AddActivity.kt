@@ -1,5 +1,6 @@
 package com.bsquare.app.presentation.ui.custom_composable
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,9 +30,7 @@ import com.bsquare.core.utils.helper.AppNavigator
 fun AddActivity(
     companyDetailViewModel: CompanyDetailViewModel,
     tabInt: Int,
-    addedActivityArg: SnapshotStateList<ActivityDetails?>,
-
-    ) {
+    addedActivityArg: SnapshotStateList<ActivityDetails?>) {
 
     Column(
         modifier = Modifier
@@ -102,6 +101,7 @@ fun AddActivity(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
+            Log.d("message", "AddActivity: ${addedActivityArg.size}")
                 items(addedActivityArg) { item ->
                     Card(
                         modifier = Modifier
@@ -109,20 +109,20 @@ fun AddActivity(
                             .padding(12.dp)
                     ) {
 
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                             if (item != null) {
                                 Text(text = item.activityFor)
                             }
-                            IconButton(onClick = {
-                                if (item != null) {
-                                    companyDetailViewModel.removeActivity(item.activityFor, tabId = tabInt.toString())
-                                }
-                            }) {
-                                Icon(
-                                    painter = R.drawable.mcircle.resourceImage(),
-                                    contentDescription = null
-                                )
-                            }
+//                            IconButton(onClick = {
+//                                if (item != null) {
+//                                    companyDetailViewModel.removeActivity(item.activityFor, tabId = tabInt.toString())
+//                                }
+//                            }) {
+//                                Icon(
+//                                    painter = R.drawable.mcircle.resourceImage(),
+//                                    contentDescription = null
+//                                )
+//                            }
                         }
                     }
                 }

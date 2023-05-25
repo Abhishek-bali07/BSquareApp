@@ -25,4 +25,5 @@ enum class EmitType {
     AddActivityDetails,
     AddNotesDetails,
     addActivity,
+    FollowFilterDetails,
 }

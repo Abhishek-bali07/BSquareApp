@@ -9,6 +9,7 @@ import com.bsquare.app.navigation.screen_transitions.AppScreenTransitions
 import com.bsquare.app.presentation.ui.screens.Lead.*
 import com.bsquare.app.presentation.ui.screens.dashboard.DashboardScreen
 import com.bsquare.app.presentation.ui.screens.followup.AddTaskScreen
+import com.bsquare.app.presentation.ui.screens.followup.FollowFilterScreen
 import com.bsquare.app.presentation.ui.screens.followup.FollowupScreen
 import com.bsquare.app.presentation.ui.screens.intro.SplashScreen
 import com.bsquare.app.presentation.ui.screens.login.LoginScreen
@@ -69,6 +70,10 @@ fun MainNavGraph(
 
         composable(destination = Destination.AddActivityScreen){
             AddActivityScreen(baseViewModel = baseViewModel)
+        }
+
+        composable(destination = Destination.FollowFilterScreen){
+            FollowFilterScreen()
         }
 
     }

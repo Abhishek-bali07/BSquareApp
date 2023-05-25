@@ -52,7 +52,9 @@ fun FilterScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            TopAppBar(backgroundColor = Color(0xffDDDDDD), elevation = 2.dp, title = {
+            TopAppBar(
+                backgroundColor = Color(0xffDDDDDD), elevation = 2.dp,
+                title = {
                 Text(
                     "Filter", modifier = Modifier.fillMaxWidth(), style = TextStyle(
                         color = Color.Black, textAlign = TextAlign.Center, fontSize = 20.sp,

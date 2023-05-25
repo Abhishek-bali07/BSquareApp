@@ -72,20 +72,23 @@ fun DashboardScreen(
 fun ColumnScope.CalenderSection(
     viewModel: DashboardViewModel
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 7.5.dp, end = 7.5.dp, bottom = 10.dp, top = 1.dp)
-    ) {
-        AndroidView(factory = { CalendarView(it) },
-            modifier = Modifier.weight(1f),
-            update = {
-                it.setOnDateChangeListener { calendarView, year, month, day ->
-                    viewModel.date = "$year - ${month + 1}- $day"
-                    viewModel.getFeatureData()
-                }
-            })
+    if (viewModel.features.isNotEmpty()){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 7.5.dp, end = 7.5.dp, bottom = 10.dp, top = 1.dp)
+        ) {
+            AndroidView(factory = { CalendarView(it) },
+                modifier = Modifier.weight(1f),
+                update = {
+                    it.setOnDateChangeListener { calendarView, year, month, day ->
+                        viewModel.date = "$year - ${month + 1}- $day"
+                        viewModel.getFeatureData()
+                    }
+                })
+        }
     }
+
 }
 
 
@@ -120,7 +123,7 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
                             .clip(
                                 CircleShape
                             )
-                            .size(65.dp)
+                            .size(50.dp)
                     )
 
                     /*AsyncImage(
@@ -178,15 +181,17 @@ fun GreetingSection(dashboardViewModel: DashboardViewModel) {
                 )
             }
         }
+        if(dashboardViewModel.shortDetail.value?.userName?.isNotEmpty()  == true){
+            Icon(
+                painter = R.drawable.bell.resourceImage(),
+                tint = Color.White,
+                contentDescription = "notify",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+        }
 
 
-        Icon(
-            painter = R.drawable.bell.resourceImage(),
-            tint = Color.White,
-            contentDescription = "notify",
-            modifier = Modifier
-                .size(30.dp)
-        )
     }
 
 

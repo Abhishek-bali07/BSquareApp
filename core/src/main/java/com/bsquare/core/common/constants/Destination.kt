@@ -48,6 +48,9 @@ sealed class Destination(
  object AddActivityScreen: NoArgumentsDestination(AppRoutes.ADDACTIVITY)
 
 
+ object FollowFilterScreen: NoArgumentsDestination(AppRoutes.FOLLOWFILTER)
+
+
 }
 
 

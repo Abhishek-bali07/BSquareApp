@@ -29,19 +29,23 @@ import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
 
 @Composable
 fun FollowupDone(
-    followupViewModel: FollowupViewModel
+    followupViewModel: FollowupViewModel,
 ){
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(15.dp)) {
-        LazyColumn( modifier = Modifier.fillMaxWidth().weight(1f)) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+                .weight(1f)) {
             items(followupViewModel.fdone){ item ->
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     Card (
                         modifier = Modifier

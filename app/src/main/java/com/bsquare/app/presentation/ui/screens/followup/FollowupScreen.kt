@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,9 @@ import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
 import com.bsquare.core.entities.Follow
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 
@@ -68,7 +73,7 @@ fun FollowupScreen(
                         )
                     }
                     IconButton(onClick = {
-
+                        followupViewModel.onFilterClicked()
                     }) {
                         Image(
                             modifier =Modifier.size(25.dp),
@@ -87,59 +92,78 @@ fun FollowupScreen(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TaskListSection(followupViewModel: FollowupViewModel) {
+fun TaskListSection(
+    followupViewModel: FollowupViewModel
+) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
 
+    val isLoading by followupViewModel.isRefreshing.collectAsState()
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
-    Column( modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.Top
+    SwipeRefresh(
+        state =swipeRefreshState,
+        onRefresh =followupViewModel::getFollowUpData,
+        indicator = {state, refreshTrigger ->
+            SwipeRefreshIndicator(
+                state = state,
+                refreshTriggerDistance = refreshTrigger,
+                backgroundColor = Color.White,
+                contentColor = Color.Red
+            )
+        }
     ) {
+        Column( modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
             TabRow(selectedTabIndex = pagerState.currentPage,
                 modifier = Modifier.fillMaxWidth(),
                 indicator = {
-                    tabPositions ->  TabRowDefaults.Indicator(
+                        tabPositions ->  TabRowDefaults.Indicator(
                     Modifier
                         .fillMaxWidth()
                         .pagerTabIndicatorOffset(pagerState, tabPositions),
                     color = Color(0xffFF0303)
-                    )
+                )
                 }) {
-                    followupViewModel.pages.forEachIndexed{index, title ->
-                        Tab(modifier = Modifier.background(color = Color.White),
-                            selectedContentColor = Color(0xffFF5E00),
-                            unselectedContentColor = Color.Black,
-                            text = { Text(title, fontSize = 12.sp) },
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            })
-                    }
+                followupViewModel.pages.forEachIndexed{index, title ->
+                    Tab(modifier = Modifier.background(color = Color.White),
+                        selectedContentColor = Color(0xffFF5E00),
+                        unselectedContentColor = Color.Black,
+                        text = { Text(title, fontSize = 12.sp) },
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        })
+                }
             }
 
-        HorizontalPager(
-            count = followupViewModel.pages.size,
-            modifier = Modifier.fillMaxWidth(),
-            state = pagerState
-        ) {
-            page ->
-            when (page) {
-                0-> {
-                    TodayFollowup(followupViewModel)
-                }
-                1->{
-                    TodayUpcoming(followupViewModel)
-                }
-                2->{
-                    TodayOverdue(followupViewModel)
-                }
-                3->{
-                    FollowupDone(followupViewModel)
+            HorizontalPager(
+                count = followupViewModel.pages.size,
+                modifier = Modifier.fillMaxWidth(),
+                state = pagerState
+            ) {
+                    page ->
+                when (page) {
+                    0-> {
+                        TodayFollowup(followupViewModel)
+                    }
+                    1->{
+                        TodayUpcoming(followupViewModel)
+                    }
+                    2->{
+                        TodayOverdue(followupViewModel)
+                    }
+                    3->{
+                        FollowupDone(followupViewModel)
+                    }
                 }
             }
         }
     }
+
+
 }

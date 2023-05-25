@@ -11,4 +11,5 @@ object AppRoutes {
     const val FOLLOW = "follow up"
     const val  ADDTASK = "add task"
     const val ADDACTIVITY = "add activity"
+    const val FOLLOWFILTER ="follow filter"
 }

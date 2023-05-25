@@ -4,14 +4,21 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,6 +46,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -55,32 +64,51 @@ fun CompanyDetailScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            TopAppBar(backgroundColor = Color.Red, elevation = 2.dp, title = {
-                Text(
-                    "${companyDetailViewModel.companyDetails.value?.companyName}",
-                    style = TextStyle(
-                        color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp
+            if (companyDetailViewModel.companyDetails.value?.companyName?.isNotEmpty() == true){
+                TopAppBar(backgroundColor = Color.Red, elevation = 2.dp, title = {
+                    Text(
+                        "${companyDetailViewModel.companyDetails.value?.companyName}",
+                        style = TextStyle(
+                            color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp
+                        )
                     )
-                )
-            },
-                navigationIcon = {
-               IconButton(
-                   onClick = {
-                       companyDetailViewModel.appNavigator.tryNavigateBack()
-                   }) {
-                   Image(
-                       modifier = Modifier
-                           .size(40.dp)
-                           .padding(horizontal = 8.dp),
-                       painter = R.drawable.backbutton.resourceImage(),
-                       contentDescription = null
-                   )
-               }
+                },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                companyDetailViewModel.appNavigator.tryNavigateBack()
+                            }) {
+                            Image(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(horizontal = 8.dp),
+                                painter = R.drawable.backbutton.resourceImage(),
+                                contentDescription = null
+                            )
+                        }
 
-            })
-            CompanyTypeSection(companyDetailViewModel,baseViewModel)
-            CompanyDetailSection(companyDetailViewModel)
-            TabBarSection(companyDetailViewModel,baseViewModel)
+                    })
+                CompanyTypeSection(companyDetailViewModel,baseViewModel)
+                CompanyDetailSection(companyDetailViewModel)
+                TabBarSection(companyDetailViewModel,baseViewModel)
+            }else {
+                Column(
+                    modifier = Modifier
+                        .padding(paddingValues)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    LoadingAnimation3()
+                }
+
+               /* CircularProgressIndicator(
+                    modifier = Modifier.size(65.dp),
+                    color = Color.Black,
+                    strokeWidth = 3.dp
+                )*/
+            }
+
 
 
         }
@@ -97,6 +125,74 @@ fun CompanyDetailScreen(
         }
     }) { "" }
 
+}
+
+@Composable
+fun LoadingAnimation3(
+    circleColor: Color = Color(0xFF35898F),
+    circleSize: Dp = 30.dp,
+    animationDelay: Int = 400,
+    initialAlpha: Float = 0.3f
+) {
+
+    // 3 circles
+    val circles = listOf(
+        remember {
+            Animatable(initialValue = initialAlpha)
+        },
+        remember {
+            Animatable(initialValue = initialAlpha)
+        },
+        remember {
+            Animatable(initialValue = initialAlpha)
+        }
+    )
+
+    circles.forEachIndexed { index, animatable ->
+
+        LaunchedEffect(Unit) {
+
+            // Use coroutine delay to sync animations
+            delay(timeMillis = (animationDelay / circles.size).toLong() * index)
+
+            animatable.animateTo(
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(
+                        durationMillis = animationDelay
+                    ),
+                    repeatMode = RepeatMode.Reverse
+                )
+            )
+        }
+    }
+
+    // container for circles
+    Row(
+        modifier = Modifier
+        //.border(width = 2.dp, color = Color.Magenta)
+    ) {
+
+        // adding each circle
+        circles.forEachIndexed { index, animatable ->
+
+            // gap between the circles
+            if (index != 0) {
+                Spacer(modifier = Modifier.width(width = 6.dp))
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(size = circleSize)
+                    .clip(shape = CircleShape)
+                    .background(
+                        color = circleColor
+                            .copy(alpha = animatable.value)
+                    )
+            ) {
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
@@ -375,7 +471,7 @@ fun CompanyTypeSection(companyDetailViewModel: CompanyDetailViewModel,baseViewMo
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.LightGray)
-            .padding( vertical = 8.dp),
+            .padding(vertical = 8.dp),
     ) {
         StatusSection(companyDetailViewModel,baseViewModel)
 
@@ -451,7 +547,8 @@ fun RowScope.LabelSection(companyDetailViewModel: CompanyDetailViewModel, baseVi
 fun RowScope.StatusSection(companyDetailViewModel: CompanyDetailViewModel,baseViewModel: BaseViewModel) {
     Row(
         modifier = Modifier
-            .weight(1f).padding(horizontal = 15.dp),
+            .weight(1f)
+            .padding(horizontal = 15.dp),
 
 
         ) {

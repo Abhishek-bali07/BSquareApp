@@ -60,7 +60,7 @@ fun FollowFilterScreen(
                     Button(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = {
-
+                                    followfilterViewModel.onResetBtnClick()
                         }, colors = ButtonDefaults.buttonColors(backgroundColor = Color.White)
                     ) {
                         Text(text = "RESET")
@@ -120,7 +120,7 @@ fun FChipSection(
    Column(modifier = Modifier.fillMaxWidth()) {
        followfilterViewModel.filterDetail.collectAsState().value?.apply {
            Text(
-               text = "Data Lead added", style = TextStyle(
+               text = "DataLead", style = TextStyle(
                    fontWeight = FontWeight.W500, fontSize = 18.sp
                )
            )
@@ -148,6 +148,42 @@ fun FChipSection(
 
                }
            }
+
+           Text(
+               text = "Labels", style = TextStyle(
+                   fontWeight = FontWeight.W500, fontSize = 18.sp
+               )
+           )
+
+
+           LazyVerticalGrid(columns = GridCells.Fixed(3)) {
+               items(dataLabel.size) { idx ->
+                   Box(contentAlignment = Alignment.Center,
+                       modifier = Modifier
+                           .padding(start = 1.dp, top = 5.dp, bottom = 5.dp)
+                           .clickable {
+                               followfilterViewModel.onClickDataLabelChip(idx)
+                           }
+                           .clip(RoundedCornerShape(25.dp))
+                           .background(
+                               color = if (dataLabel[idx].isSelected) Color.Red.copy(alpha = .3f) else Color(
+                                   0xffDDDDDD
+                               )
+                           )
+                           .padding(10.dp)
+
+                   ) {
+                       Text(
+                           text = dataLabel[idx].labelName, style = TextStyle(
+                               fontSize = 14.sp
+                           )
+                       )
+                   }
+
+               }
+           }
+
+
        }
    }
 }

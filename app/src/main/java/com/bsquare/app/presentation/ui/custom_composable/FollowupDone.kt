@@ -17,19 +17,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
 
 @Composable
 fun FollowupDone(
     followupViewModel: FollowupViewModel,
+    page: Int,
 ){
     Column(
         verticalArrangement = Arrangement.SpaceBetween,

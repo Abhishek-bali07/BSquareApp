@@ -1,13 +1,14 @@
 package com.bsquare.app.presentation.ui.screens.followup
 
+import android.widget.SearchView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -19,13 +20,13 @@ import com.bsquare.app.presentation.states.resourceImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bsquare.app.presentation.ui.custom_composable.FollowupDone
 import com.bsquare.app.presentation.ui.custom_composable.TodayFollowup
 import com.bsquare.app.presentation.ui.custom_composable.TodayOverdue
 import com.bsquare.app.presentation.ui.custom_composable.TodayUpcoming
 import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
-import com.bsquare.core.entities.Follow
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.pagerTabIndicatorOffset
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -37,11 +38,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun FollowupScreen(
     followupViewModel: FollowupViewModel = hiltViewModel(),
-){
+) {
     val scaffoldState = rememberScaffoldState()
-    Scaffold(scaffoldState = scaffoldState
-    ) {
-        paddingValues ->
+    Scaffold(
+        scaffoldState = scaffoldState
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -50,7 +51,9 @@ fun FollowupScreen(
             TopAppBar(
                 backgroundColor = Color.Red, elevation = 2.dp, title = {
                     Text(
-                        "Follow-ups", modifier = androidx.compose.ui.Modifier.fillMaxWidth(), style = TextStyle(
+                        "Follow-ups",
+                        modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+                        style = TextStyle(
                             color = Color.White, textAlign = TextAlign.Center, fontSize = 20.sp,
                         )
                     )
@@ -65,7 +68,12 @@ fun FollowupScreen(
                     )
                 }, actions = {
                     IconButton(
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            followupViewModel.selectPager.value?.let {
+                                followupViewModel.selectPager.value =
+                                    it.copy(isVisible = !it.isVisible)
+                            }
+                        }) {
                         Image(
                             modifier = Modifier.size(25.dp),
                             painter = R.drawable.search.resourceImage(),
@@ -76,7 +84,7 @@ fun FollowupScreen(
                         followupViewModel.onFilterClicked()
                     }) {
                         Image(
-                            modifier =Modifier.size(25.dp),
+                            modifier = Modifier.size(25.dp),
                             painter = R.drawable.filter.resourceImage(),
                             contentDescription = null
                         )
@@ -85,10 +93,57 @@ fun FollowupScreen(
 
                 })
 
+
+
+
+
             TaskListSection(followupViewModel)
-    }
+        }
     }
 }
+
+
+/*@Composable
+fun SearchView(followupViewModel: FollowupViewModel,) {
+    OutlinedTextField(
+        value = followupViewModel.searchTxt.value,
+        onValueChange = followupViewModel::onChangeSearchTxt,
+        modifier = Modifier
+            .fillMaxWidth(),
+        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
+        leadingIcon = {
+            Icon(
+                Icons.Default.Search,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(15.dp)
+                    .size(24.dp)
+            )
+        },
+        trailingIcon = {
+            if (followupViewModel.searchTxt.value != "" ) {
+                IconButton(
+                    onClick = {
+                        followupViewModel.searchTxt.value = ""
+
+                    }
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        },
+        singleLine = true,
+        shape = RectangleShape,
+    )
+}*/
+
+
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -102,9 +157,9 @@ fun TaskListSection(
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
     SwipeRefresh(
-        state =swipeRefreshState,
-        onRefresh =followupViewModel::getFollowUpData,
-        indicator = {state, refreshTrigger ->
+        state = swipeRefreshState,
+        onRefresh = followupViewModel::getFollowUpData,
+        indicator = { state, refreshTrigger ->
             SwipeRefreshIndicator(
                 state = state,
                 refreshTriggerDistance = refreshTrigger,
@@ -113,21 +168,22 @@ fun TaskListSection(
             )
         }
     ) {
-        Column( modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Top
         ) {
             TabRow(selectedTabIndex = pagerState.currentPage,
                 modifier = Modifier.fillMaxWidth(),
-                indicator = {
-                        tabPositions ->  TabRowDefaults.Indicator(
-                    Modifier
-                        .fillMaxWidth()
-                        .pagerTabIndicatorOffset(pagerState, tabPositions),
-                    color = Color(0xffFF0303)
-                )
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        Modifier
+                            .fillMaxWidth()
+                            .pagerTabIndicatorOffset(pagerState, tabPositions),
+                        color = Color(0xffFF0303)
+                    )
                 }) {
-                followupViewModel.pages.forEachIndexed{index, title ->
+                followupViewModel.pages.forEachIndexed { index, title ->
                     Tab(modifier = Modifier.background(color = Color.White),
                         selectedContentColor = Color(0xffFF5E00),
                         unselectedContentColor = Color.Black,
@@ -135,6 +191,8 @@ fun TaskListSection(
                         selected = pagerState.currentPage == index,
                         onClick = {
                             scope.launch {
+                                followupViewModel.selectPager.value =
+                                    followupViewModel.selectPager.value?.copy(pagerState = index)
                                 pagerState.animateScrollToPage(index)
                             }
                         })
@@ -145,20 +203,19 @@ fun TaskListSection(
                 count = followupViewModel.pages.size,
                 modifier = Modifier.fillMaxWidth(),
                 state = pagerState
-            ) {
-                    page ->
+            ) { page ->
                 when (page) {
-                    0-> {
-                        TodayFollowup(followupViewModel)
+                    0 -> {
+                        TodayFollowup(followupViewModel, page)
                     }
-                    1->{
-                        TodayUpcoming(followupViewModel)
+                    1 -> {
+                        TodayUpcoming(followupViewModel, page)
                     }
-                    2->{
-                        TodayOverdue(followupViewModel)
+                    2 -> {
+                        TodayOverdue(followupViewModel, page)
                     }
-                    3->{
-                        FollowupDone(followupViewModel)
+                    3 -> {
+                        FollowupDone(followupViewModel, page)
                     }
                 }
             }

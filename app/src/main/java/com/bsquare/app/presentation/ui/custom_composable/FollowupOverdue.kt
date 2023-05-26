@@ -28,7 +28,8 @@ import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
 
 @Composable
 fun TodayOverdue(
-    followupViewModel: FollowupViewModel
+    followupViewModel: FollowupViewModel,
+    page: Int
 ){
     Column(
         verticalArrangement = Arrangement.SpaceBetween,

@@ -73,7 +73,7 @@ fun MainNavGraph(
         }
 
         composable(destination = Destination.FollowFilterScreen){
-            FollowFilterScreen()
+            FollowFilterScreen(baseViewModel = baseViewModel)
         }
 
     }

@@ -1,6 +1,7 @@
 package com.bsquare.app.presentation.ui.view_models
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bsquare.app.presentation.states.castListToRequiredTypes
@@ -8,6 +9,7 @@ import com.bsquare.app.presentation.states.castValueToRequiredTypes
 import com.bsquare.core.common.constants.Destination
 import com.bsquare.core.common.enums.EmitType
 import com.bsquare.core.entities.Follow
+import com.bsquare.core.entities.SearchPageTab
 import com.bsquare.core.usecases.FollowupUseCase
 import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +26,44 @@ private val appNavigator: AppNavigator
 ): ViewModel() {
 
 
+    val isTextfieldExpanded = mutableStateOf(false)
+
+    val selectPager = mutableStateOf<SearchPageTab?>(SearchPageTab())
+
     val ftoday = mutableStateListOf<Follow>()
     val fupcoming = mutableStateListOf<Follow>()
     val foverdue = mutableStateListOf<Follow>()
     val fdone = mutableStateListOf<Follow>()
+
+
+    val searchTxt  = mutableStateOf<String>("")
+
+    val usearchTxt = mutableStateOf<String>("")
+
+    val overdueTxt = mutableStateOf<String>("")
+
+    val doneTxt = mutableStateOf<String>("")
+
+    fun onChangeSearchTxt(s : String){
+        searchTxt.value = s
+    }
+
+    fun onChangeUpcomingTxt(u :String){
+        usearchTxt.value = u
+    }
+
+
+    fun  onChangeOverdueTxt(o :String){
+        overdueTxt.value  = o
+    }
+
+
+    fun onChangeDoneTxt(d : String){
+        doneTxt.value = d
+    }
+
+
+
 
 
     private val _isRefreshing = MutableStateFlow(false)

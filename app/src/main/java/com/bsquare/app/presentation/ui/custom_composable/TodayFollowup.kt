@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.bsquare.app.R
 import com.bsquare.app.presentation.ui.view_models.FollowupViewModel
 
 
@@ -82,7 +84,17 @@ fun TodayFollowup(
                         }
                     },
                     singleLine = true,
-                    shape = RectangleShape
+                    shape = RectangleShape,
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = Color.White,
+                        cursorColor = Color.White,
+                        leadingIconColor = Color.White,
+                        trailingIconColor = Color.White,
+                        backgroundColor = colorResource(id = R.color.black),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    )
                 )
             }
         }

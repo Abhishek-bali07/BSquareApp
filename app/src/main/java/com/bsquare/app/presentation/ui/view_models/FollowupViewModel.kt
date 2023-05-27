@@ -13,10 +13,12 @@ import com.bsquare.core.entities.SearchPageTab
 import com.bsquare.core.usecases.FollowupUseCase
 import com.bsquare.core.utils.helper.AppNavigator
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +31,16 @@ private val appNavigator: AppNavigator
     val isTextfieldExpanded = mutableStateOf(false)
 
     val selectPager = mutableStateOf<SearchPageTab?>(SearchPageTab())
+
+    val ftodayForOeration = mutableListOf<Follow>()
+
+    val fupcomingOperation = mutableListOf<Follow>()
+
+    val foverdueOperation = mutableListOf<Follow>()
+
+    val fdoneOperation = mutableListOf<Follow>()
+
+
 
     val ftoday = mutableStateListOf<Follow>()
     val fupcoming = mutableStateListOf<Follow>()
@@ -44,12 +56,32 @@ private val appNavigator: AppNavigator
 
     val doneTxt = mutableStateOf<String>("")
 
+
+
     fun onChangeSearchTxt(s : String){
         searchTxt.value = s
+        viewModelScope.launch {
+            delay(500L)
+            ftodayForOeration.filter {
+                it.companyName.lowercase().contains(s.lowercase())
+            }.let {
+              ftoday.clear()
+              ftoday.addAll(it)
+            }
+        }
     }
 
     fun onChangeUpcomingTxt(u :String){
         usearchTxt.value = u
+        viewModelScope.launch {
+            delay(500L)
+            fupcomingOperation.filter {
+                it.companyName.lowercase().contains(u.lowercase())
+            }.let{
+                fupcoming.clear()
+                fupcoming.addAll(it)
+            }
+        }
     }
 
 
@@ -87,24 +119,32 @@ private val appNavigator: AppNavigator
                 }
                 EmitType.FollowItem ->
                     it.value?.castListToRequiredTypes<Follow>()?.let {
+                        ftodayForOeration.clear()
+                        ftodayForOeration.addAll(it)
                         ftoday.clear()
                         ftoday.addAll(it)
                     }
 
                 EmitType.UpcomingFollow ->
                     it.value?.castListToRequiredTypes<Follow>()?.let {
+                        fupcomingOperation.clear()
+                        fupcomingOperation.addAll(it)
                         fupcoming.clear()
                         fupcoming.addAll(it)
                     }
 
                 EmitType.OverdueFollow ->
                     it.value?.castListToRequiredTypes<Follow>()?.let {
+                        foverdueOperation.clear()
+                        fupcomingOperation.addAll(it)
                         foverdue.clear()
                         foverdue.addAll(it)
                     }
 
                 EmitType.DoneFollow ->
                     it.value?.castListToRequiredTypes<Follow>()?.let {
+                        fdoneOperation.clear()
+                        fdoneOperation.addAll(it)
                         fdone.clear()
                         fdone.addAll(it)
                     }

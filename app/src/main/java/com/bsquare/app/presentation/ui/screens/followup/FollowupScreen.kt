@@ -103,47 +103,6 @@ fun FollowupScreen(
 }
 
 
-/*@Composable
-fun SearchView(followupViewModel: FollowupViewModel,) {
-    OutlinedTextField(
-        value = followupViewModel.searchTxt.value,
-        onValueChange = followupViewModel::onChangeSearchTxt,
-        modifier = Modifier
-            .fillMaxWidth(),
-        textStyle = TextStyle(color = Color.White, fontSize = 18.sp),
-        leadingIcon = {
-            Icon(
-                Icons.Default.Search,
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(15.dp)
-                    .size(24.dp)
-            )
-        },
-        trailingIcon = {
-            if (followupViewModel.searchTxt.value != "" ) {
-                IconButton(
-                    onClick = {
-                        followupViewModel.searchTxt.value = ""
-
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(15.dp)
-                            .size(24.dp)
-                    )
-                }
-            }
-        },
-        singleLine = true,
-        shape = RectangleShape,
-    )
-}*/
-
-
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable

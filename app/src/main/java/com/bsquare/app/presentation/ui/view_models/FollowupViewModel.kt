@@ -87,11 +87,29 @@ private val appNavigator: AppNavigator
 
     fun  onChangeOverdueTxt(o :String){
         overdueTxt.value  = o
+        viewModelScope.launch {
+            delay(500L)
+            foverdueOperation.filter {
+                it.companyName.lowercase().contains(o.lowercase())
+            }.let {
+                foverdue.clear()
+                foverdue.addAll(it)
+            }
+        }
     }
 
 
     fun onChangeDoneTxt(d : String){
         doneTxt.value = d
+        viewModelScope.launch {
+            delay(500L)
+            fdoneOperation.filter {
+                it.companyName.lowercase().contains(d.lowercase())
+            }.let {
+                fdone.clear()
+                fdone.addAll(it)
+            }
+        }
     }
 
 

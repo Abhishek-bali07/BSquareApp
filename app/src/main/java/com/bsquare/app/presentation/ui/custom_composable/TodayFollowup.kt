@@ -90,7 +90,7 @@ fun TodayFollowup(
                         cursorColor = Color.White,
                         leadingIconColor = Color.White,
                         trailingIconColor = Color.White,
-                        backgroundColor = colorResource(id = R.color.black),
+                        backgroundColor = Color.LightGray,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent

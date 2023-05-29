@@ -107,7 +107,8 @@ fun LeadScreen(
                     )
                 }, actions = {
                     IconButton(
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                        }) {
                         Image(
                             modifier = Modifier.size(25.dp),
                             painter = R.drawable.search.resourceImage(),
